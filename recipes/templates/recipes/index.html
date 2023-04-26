@@ -1,0 +1,25 @@
+{% extends 'recipes/header.html' %}
+{% block content %}
+
+    <div class="container" style="margin-left: 50px; padding-right: 30px;">
+        <div class="row">
+            {% if categories %}
+                {% for cat in categories %}        
+                    <div class="card" style="width: 18rem; margin: 15px; background-color: rgba(132, 136, 136, 0.76); border: 2px solid rgb(99, 104, 104); color: whitesmoke;">
+                        <a href="view_cat/{{cat.pk}}">
+                            <img class="card-img-top" src="{{cat.image}}" alt="No Image" width='250' height='300' style="border: 1px solid rgb(156, 149, 149);">
+                        </a>    
+                        <div class="card-body">
+                            <h5 class="card-title">{{ cat.name }}</h5>
+                            <p class="card-text">{{cat.description}}</p>
+                        </div>               
+                    </div>       
+                {% endfor %}    
+            {% else %}
+            <h5 style="text-align: center;">No Recipes.</h5>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}
+

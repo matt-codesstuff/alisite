@@ -1,0 +1,68 @@
+{% extends 'recipes/header.html' %}
+
+{% block content %}
+    <h3 style="text-align: center; color: whitesmoke;">Edit: {{recipe.title}}</h3>
+    <hr>
+    <form action="/ingredient_handler/add,{{recipe.id}}" method="POST">
+        <div class="cat-flex">
+            {% csrf_token %}
+            {{ingr_form}}
+        </div>
+
+        <div class="button-flex">
+            <input id="button" type="submit" value="Ingredient">   
+            <button id="button"  formaction="/ingredient_handler/header,{{recipe.id}}">Header</button>                   
+            <button id="button" formaction="/ingredient_handler/del,{{recipe.id}}">Delete</button>
+        </div>
+        
+        <div class="row-container" >
+            <div class="ingredient-list" style="margin-bottom: 50px;">
+                <ul>
+                {% for i in ingr_list %}
+                    {% if i.0 == '!' %}
+                        <br>
+                        <strong>{{i| slice:'1:'}}</strong>
+                    {% else %} 
+                        <li>{{i}}</li>   
+                    {% endif %}    
+                {% endfor %}
+                </ul>           
+            </div>
+
+        </div>
+
+    </form>
+    <hr>
+
+    <form action="/edit_recipe/{{recipe.pk}}" method="POST">
+        {% csrf_token %}    
+        <div class="row-container">
+            <div class="cat-flex">
+                {{rec_form.category.label}}
+                {{rec_form.category.errors}}{{rec_form.category}}
+            </div>
+            <div class="cat-flex" style="margin-left: 25px;">
+                {{rec_form.new_category.label}}
+                {{rec_form.new_category.errors}}{{rec_form.new_category}}
+            </div>
+        </div>
+
+        <div class="cat-flex">
+            {{rec_form.title.label}}
+            {{rec_form.title}}
+        </div>
+        
+        <br>
+        <div>
+            {{rec_form.media}}
+            {{rec_form.body}}
+            <br><br><br>
+            <div class="left">
+                <input id="button" type="submit" value="save">
+            </div>            
+        </div>
+
+    </form>
+    <div class="footer-div"></div>
+
+{% endblock %}

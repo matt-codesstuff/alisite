@@ -1,0 +1,92 @@
+a {
+  text-decoration: none;
+  color: whitesmoke;
+}
+
+body {
+  color: whitesmoke;
+  background-color: #2C3333;
+}
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 1em 0;
+  padding: 0;
+}
+
+.row-container {
+    display: flex;
+    flex-direction: row;        
+  }
+
+.ingredient-list {
+  background-color: rgb(243, 242, 242);
+  color:#2C3333;
+  width: 350px;
+  height: 500px;
+  padding-top: 25px;
+  padding: 10px;
+  border-radius: 3px;
+  font-size: smaller;
+}
+
+.button-flex {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  margin-bottom: 10px;  
+}
+
+.cat-flex {
+  display: flex;
+  flex-direction: column;
+  width: 135px;
+  margin: 3px;
+}
+
+.recipe-text{
+  width: 800px;
+  height: 900px;
+  background-color: whitesmoke;
+  color: black;
+  padding: 15px;
+  border: 1px solid #1d2121;
+  border-radius: 5px;
+}
+
+.edit-button {
+  display: flex;
+  justify-content: left;
+  width: 800px;
+}
+
+.right {
+  display: flex;
+  justify-content: right;
+}
+
+.left {
+  display: flex;
+  justify-content: left;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.footer-div {
+  height: 200px;
+}
+
+
+#button {
+  width: 110px;
+  border-radius: 5px;
+  margin: 3px;
+  border: none;
+}
+
