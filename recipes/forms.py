@@ -3,7 +3,7 @@ from django import forms
 from .models import Recipe
 
 class IngredientForm(forms.Form):
-    ingredient = forms.CharField(required=False)
+    ingredient = forms.CharField(widget=forms.TextInput(attrs={'autofocus': True}), required=False)
 
     def clean(self):
         cleaned_data = super().clean()

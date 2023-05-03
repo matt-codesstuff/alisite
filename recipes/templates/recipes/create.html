@@ -5,15 +5,15 @@
     <h3 style="text-align: center; color: whitesmoke;">New Recipe</h3>
     <hr>
     
-    <form action="/ingredient_handler/add" method="POST">
+    <form action="{% url 'recipes:ingredient_handler' action='add' %}" method="POST">
         <div class="cat-flex">
             {% csrf_token %}
             {{ingr_form}}
         </div>                
         <div class="button-flex">
             <input id="button" type="submit" value="Ingredient">   
-            <button id="button"  formaction="ingredient_handler/header">Header</button>                   
-            <button id="button" formaction="ingredient_handler/del">Delete</button>
+            <button id="button"  formaction="{% url 'recipes:ingredient_handler' action='header' %}">Header</button>                   
+            <button id="button" formaction="{% url 'recipes:ingredient_handler' action='del' %}">Delete</button>
         </div>
         
         <div class="row-container" >
@@ -33,7 +33,7 @@
     </form>
 
     <hr>
-    <form action="create" method="POST">
+    <form action="{% url 'recipes:create' %}" method="POST">
         {% csrf_token %}
 
         <div class="row-container">

@@ -16,7 +16,7 @@ def create(request):
             if new_category:
                 c = Category(name = new_category)
                 c.save()
-                
+
                 categories = Category.objects.all()
                 title = request.POST.get('title')
                 body = request.POST.get('body')
@@ -55,7 +55,7 @@ def create(request):
         else:
             messages.info(request, 'Choose a category or create a new one.')
             return redirect('recipes:create')
-        
+
     ingr_form = IngredientForm()
     rec_form = RecipeForm()
     categories = Category.objects.all()
@@ -84,6 +84,12 @@ def ingredient_handler(request, action):
    
     if action[-1].isnumeric():
         recipe_pk = action.split(',')[-1]
+        recipe = Recipe.objects.get(pk=recipe_pk)
+        ingr_str = ''
+        for i in INGREDIENT_LS:
+            ingr_str += f'{i},'
+        recipe.ingredients = ingr_str
+        recipe.save()    
         return redirect(reverse('recipes:edit_recipe', kwargs={'pk': recipe_pk}))
 
     return redirect('recipes:create') 
@@ -140,7 +146,7 @@ def edit_recipe(request, pk):
                 recipe.ingredients = ingr_str    
                 recipe.save()
                 INGREDIENT_LS.clear()                
-                return redirect('/')
+                return redirect(f'/view_cat/view_recipe/{recipe.pk}')
             else:    
                 category_pk = request.POST.get('category')
                 category = Category.objects.get(pk=category_pk)
@@ -154,7 +160,7 @@ def edit_recipe(request, pk):
 
                 recipe.save()
                 INGREDIENT_LS.clear()
-                return redirect('/')
+                return redirect(f'/view_cat/view_recipe/{recipe.pk}')
         else:
             messages.info(request, 'Choose a category or create a new one.')
             return redirect(reverse('recipes:edit_recipe', kwargs={'pk': pk}))

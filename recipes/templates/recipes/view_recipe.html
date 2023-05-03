@@ -28,7 +28,7 @@
     <br><br><br>
     <div class="center">
         <div class="edit-button">
-            <a href="/edit_recipe/{{recipe.pk}}"><button id="button">Edit</button></a>
+            <a href="{% url 'recipes:edit_recipe' pk=recipe.pk %}"><button id="button">Edit</button></a>
         </div>            
     </div> 
 

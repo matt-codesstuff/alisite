@@ -3,7 +3,7 @@
 {% block content %}
     <h3 style="text-align: center; color: whitesmoke;">Edit: {{recipe.title}}</h3>
     <hr>
-    <form action="/ingredient_handler/add,{{recipe.id}}" method="POST">
+    <form action="{% url 'recipes:ingredient_handler' action='add{{recipe.id}}' %}" method="POST">
         <div class="cat-flex">
             {% csrf_token %}
             {{ingr_form}}
@@ -11,8 +11,8 @@
 
         <div class="button-flex">
             <input id="button" type="submit" value="Ingredient">   
-            <button id="button"  formaction="/ingredient_handler/header,{{recipe.id}}">Header</button>                   
-            <button id="button" formaction="/ingredient_handler/del,{{recipe.id}}">Delete</button>
+            <button id="button"  formaction="{% url 'recipes:ingredient_handler' action='header{{recipe.id}}' %}">Header</button>                   
+            <button id="button" formaction="{% url 'recipes:ingredient_handler' action='del{{recipe.id}}' %}">Delete</button>
         </div>
         
         <div class="row-container" >
@@ -34,7 +34,7 @@
     </form>
     <hr>
 
-    <form action="/edit_recipe/{{recipe.pk}}" method="POST">
+    <form action="{% url 'recipes:edit_recipe' pk=recipe.pk %}" method="POST">
         {% csrf_token %}    
         <div class="row-container">
             <div class="cat-flex">
@@ -63,6 +63,6 @@
         </div>
 
     </form>
-    <div class="footer-div"></div>
+
 
 {% endblock %}

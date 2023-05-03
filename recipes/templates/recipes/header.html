@@ -33,13 +33,13 @@
                 <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDarkDropdownMenuLink">
                   {% for rec in recipes %}
                     {% if rec.category == cat %}
-                      <li><a class="dropdown-item" href="/view_cat/view_recipe/{{rec.pk}}">{{rec}}</a></li>
+                      <li><a class="dropdown-item" href="{% url 'recipes:view_recipe' pk=rec.pk %}">{{rec}}</a></li>
                     {% endif %}
                   {% endfor %}                                   
                 </ul>
             {% endfor %}  
           </ul>
-          <a class="nav-link" href="/create">New</a>
+          <a class="nav-link" href="{% url 'recipes:create' %}">New</a>
         </div>
       </div>
     </nav>
