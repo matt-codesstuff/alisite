@@ -1,24 +1,38 @@
 {% extends 'recipes/header.html' %}
 {% block content %}
-
-    <div class="container" style="margin-left: 50px; padding-right: 30px;">
+    <div style="margin-left: 50px; padding-right: 30px;">
         <div class="row">
             {% if categories %}
                 {% for cat in categories %}        
-                    <div class="card" style="width: 18rem; margin: 15px; background-color: rgba(132, 136, 136, 0.76); border: 2px solid rgb(99, 104, 104); color: whitesmoke;">
+                    <div class="card" style="width: 18rem; margin: 15px; background-color: rgba(132, 136, 136, 0.76); border: 2px solid rgb(99, 104, 104); padding: 15px; color: whitesmoke">
                         <a href="{% url 'recipes:view_cat' pk=cat.pk %}">
-                            <img class="card-img-top" src="{{cat.image}}" alt="No Image" width='250' height='300' style="border: 1px solid rgb(156, 149, 149);">
+                            <img class="card-img-top" src="{{ cat.image }}" alt="No Image" width='250' height='300' style="border: 1px solid rgb(156, 149, 149);">
                         </a>    
                         <div class="card-body">
                             <h5 class="card-title">{{ cat.name }}</h5>
                             <p class="card-text">{{cat.description}}</p>
-                        </div>               
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              Recipes
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                {% for rec in recipes|dictsort:"title" %}
+                                    {% if rec.category == cat %}
+                                        <a class="dropdown-item" href="{% url 'recipes:view_recipe' pk=rec.pk %}">{{rec}}</a>
+                                    {% endif %}
+                                {% endfor %}
+                              
+                            </div>
+                        </div>          
                     </div>       
                 {% endfor %}    
             {% else %}
-            <h5 style="text-align: center;">No Recipes.</h5>
+                <h5 style="text-align: center;">No Recipes</h5>
+                <h6 style="text-align: center;">(Click on "New" to enter some recipes)</h5>
             {% endif %}
         </div>
+
     </div>
 
 {% endblock %}

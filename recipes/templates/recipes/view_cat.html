@@ -1,9 +1,9 @@
-{% extends 'recipes/header.html' %}
+{% extends 'recipes/header.html' %} 
 {% block content %}
-    <ul>
-        {% for rec in cat_recipes %}
-        <li><a href="{% url 'recipes:view_recipe' pk=rec.pk %}">{{ rec }}</a></li>
-        {% endfor %}
-    </ul>
+  <ul>
+    {% for rec in cat_recipes %}
+      <li><a href="{% url 'recipes:view_recipe' pk=rec.pk %}">{{ rec }}</a></li>
+    {% endfor %}
+  </ul>
 
 {% endblock %}

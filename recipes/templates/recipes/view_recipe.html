@@ -1,37 +1,48 @@
-{% extends 'recipes/header.html' %}
+{% extends 'recipes/header.html' %} 
 {% block content %}
-    <div>   
-        <h3 style="text-align: center;">{{ recipe.title.capitalize }}</h3>
-        <hr>
-            <div>
-                <ul>
-                    {% for i in ingr_list %}
-                        {% if i.0 == '!' %}
-                            <br>
-                            <strong>{{i|slice:'1:'}}</strong>
-                        {% else %} 
-                            <li>{{i}}</li>   
-                        {% endif %}                            
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <hr>
-            <br>
-            <div class="center">
-                <div class="recipe-text">
-                    {{ recipe.body| safe }}
-                </div>
-            </div>
+  <div>
+    <div style="text-align: center;">
+      {% if recipe.site %}
+        <h6><small style="color: rgb(168, 167, 167)">{{ recipe.site }}</small></h6>
+      {% endif %}
+      <h3>{{ recipe.title.title }} </h3>
+      {% if recipe.servings %}
+        <h4><small style="color: rgb(168, 167, 167)">(serves {{ recipe.servings }})</small></h4>
+      {% endif %}  
     </div>
 
-    <br><br><br>
-    <div class="center">
-        <div class="edit-button">
-            <a href="{% url 'recipes:edit_recipe' pk=recipe.pk %}"><button id="button">Edit</button></a>
-        </div>            
-    </div> 
+    <hr>
+    <div>
+      <ul>
+        {% for i in ingr_list %} 
+          {% if i.0 == '!' %}
+            <br>
+            <strong>{{i|slice:'1:'}}</strong>
+          {% else %}
+            <li>{{i}}</li>
+          {% endif %} 
+        {% endfor %}
+      </ul>
+    </div>
 
-    <div class="footer-div"></div>   
+    <hr>
+    <br>
+    <div class="center">
+      <div class="recipe-text">
+        {{ recipe.body| safe }}
+      </div>
+    </div>
+  </div>
+
+  <br><br><br>
+  <div class="center">
+    <div class="edit-button">
+      <a href="{% url 'recipes:edit_recipe' pk=recipe.pk %}">
+        <button id="button">Edit</button>
+      </a>
+    </div>
+  </div>
+
+  <div class="footer-div"> </div>
 
 {% endblock %}

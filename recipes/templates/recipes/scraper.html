@@ -1,0 +1,62 @@
+{% extends 'recipes/header.html' %}
+
+{% block content %}
+    <div style="text-align: center;">
+        <h3>Get Recipe From The Internet</h3>
+        <hr>
+        <br>
+        <h6>Paste the URL for the recipe you wish to save</h6>
+        <h6>and choose a category</h6>
+    </div>
+    <br><br>
+    <form action="{% url 'recipes:recipe_scraper' %}" method="post">
+        {% csrf_token %}
+        <div class="center">
+            <div class="column-container" style="border: 1px solid #ccc; border-radius: 15px; padding: 33px; background-color: #383e3e">
+                <div class="column-container" style="align-items: center;">
+                    <div class="cat-flex" >
+                        {{ form.url.label }}
+                        {{ form.url }}
+                    </div>
+                    <div class="cat-flex">
+                        {{ form.category.label }}
+                        {{ form.category }}
+                    </div>
+                </div>
+                <br><br>
+                <div style="border: 1px solid #ccc; border-radius:  15px; padding: 33px; background-color: #2c3434">
+                    <div class="cat-flex">
+                        {{ form.new_category.label }}
+                        {{ form.new_category }}
+                    </div>
+                    <div class="cat-flex">
+                        {{ form.cat_image.label }}
+                        {{ form.cat_image }}
+                        <p style="color:#ccc"><small>(optional)</small></p>
+                    </div>
+                    <div class="cat-flex">
+                        {{ form.cat_description.label }}
+                        {{ form.cat_description }}
+                        <p style="color:#ccc"><small>(optional)</small></p>
+                    </div>
+                </div>
+                <br><br>
+                <div style="display: flex; justify-content: center;">
+                    <input id="button" type="submit" value="go!">
+                </div>
+
+                
+            </div>
+            
+
+
+
+
+
+
+            
+        </div>
+
+    </form>
+
+{% endblock %}

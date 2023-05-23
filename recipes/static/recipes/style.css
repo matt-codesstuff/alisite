@@ -22,13 +22,26 @@ hr {
     flex-direction: row;        
   }
 
+.column-container {
+  display: flex;
+  flex-direction: column;       
+}
+
+.seperate {
+  display: flex;
+  justify-content: space-between;
+  
+
+}
+
 .ingredient-list {
   background-color: rgb(243, 242, 242);
   color:#2C3333;
   width: 350px;
-  height: 500px;
-  padding-top: 25px;
+  min-height: 500px;
+
   padding: 10px;
+  margin-bottom: 50px;
   border-radius: 3px;
   font-size: smaller;
 }
@@ -43,8 +56,9 @@ hr {
 .cat-flex {
   display: flex;
   flex-direction: column;
-  width: 135px;
+  width: 230px;
   margin: 3px;
+  padding: 7px;
 }
 
 .recipe-text{
@@ -53,6 +67,8 @@ hr {
   background-color: whitesmoke;
   color: black;
   padding: 20px;
+  padding-top: 35px;
+  padding-bottom: 100px;
   border: 1px solid #1d2121;
   border-radius: 5px;
 }
@@ -87,6 +103,12 @@ hr {
   width: 110px;
   border-radius: 5px;
   margin: 3px;
-  border: none;
+  border: 1px solid whitesmoke;
+}
+
+#button:hover {
+  background-color: rgb(173, 182, 196);
+
+
 }
 
