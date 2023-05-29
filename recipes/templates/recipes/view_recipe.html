@@ -37,7 +37,7 @@
   <br><br><br>
   <div class="center">
     <div class="edit-button">
-      <a href="{% url 'recipes:edit_recipe' pk=recipe.pk %}">
+      <a href="{% url 'recipes:edit_recipe' user_pk=user.pk rec_pk=recipe.pk %}">
         <button id="button">Edit</button>
       </a>
     </div>

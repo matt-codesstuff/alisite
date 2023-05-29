@@ -3,7 +3,7 @@
   <h3 style="text-align: center;">Edit</h3>
   <h3 style="text-align: center;">{{recipe.title}}</h3>
   <hr />
-  <form action="/ingredient_handler/add,{{recipe.pk}}" method="POST">
+  <form action="/ingredient_handler/{{user.pk}}/add,{{recipe.pk}}" method="POST">
     <div class="center">
       <div style="border: 1px solid #ccc; border-radius:  15px; padding: 33px; background-color: #383e3e">
           <div class="cat-flex">
@@ -12,8 +12,8 @@
           </div>
           <div class="button-flex">
               <input id="button" type="submit" value="Ingredient">
-              <button id="button" formaction="/ingredient_handler/header,{{recipe.pk}}">Header</button>
-              <button id="button" formaction="/ingredient_handler/del,{{recipe.pk}}">Delete</button>
+              <button id="button" formaction="/ingredient_handler/{{user.pk}}/header,{{recipe.pk}}">Header</button>
+              <button id="button" formaction="/ingredient_handler/{{user.pk}}/del,{{recipe.pk}}">Delete</button>
           </div>        
           <div class="row-container">
               <div class="ingredient-list">
@@ -34,15 +34,19 @@
   </form>
 
   <hr>
-  <form action="{% url 'recipes:edit_recipe' pk=recipe.pk %}" method="POST">
+  <form action="{% url 'recipes:edit_recipe' user_pk=user.pk rec_pk=recipe.pk %}" method="POST">
     {% csrf_token %}
     <div class="seperate" style="padding: 25px; display: flex; flex-wrap: wrap;" >
       <div >
           <div class="column-container" >
-              <div class="cat-flex">
-                  {{rec_form.category.label}}
-                  {{rec_form.category.errors}}{{rec_form.category}}
-              </div>
+            <div class="cat-flex">
+                <label for="category">Category</label>
+                <select name="category" id="category">
+                    {% for cat  in categories %}
+                        <option>{{cat}}</option>
+                    {% endfor %}    
+                </select>
+            </div>
               <div class="cat-flex">
                   {{rec_form.title.label}}
                   {{rec_form.title}}
@@ -76,21 +80,21 @@
               </p>
           </div>
       </div>    
-  </div>
-  <br><br>            
-  <div class="center">
-      <div class="column-container">
-          {{rec_form.media}}
-          {{rec_form.body}}
-          <br><br>
-          <div class="row-container">
-            <input id="button" type="submit" value="Save">
-            <button id="button" formaction="{% url 'recipes:delete_recipe' pk=recipe.pk %}">Delete</button>
-          </div>
-          
-      </div>    
-  </div>
-  <br>
+    </div>
+    <br><br>            
+    <div class="center">
+        <div class="column-container">
+            {{rec_form.media}}
+            {{rec_form.body}}
+            <br><br>
+            <div class="row-container">
+                <input id="button" type="submit" value="Save">
+                <button id="button" formaction="{% url 'recipes:delete_recipe' rec_pk=recipe.pk %}">Delete</button>
+            </div>
+            
+        </div>    
+    </div>
+    <br>
   </form>
 
 {% endblock %}

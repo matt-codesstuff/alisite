@@ -1,9 +1,11 @@
 from django.db import models
-from ckeditor.fields import RichTextField
-from django.core.validators import RegexValidator
+from django.contrib.auth.models import User
+
+
 
 
 class Category(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     image = models.URLField(blank=True, null=True,)
     description = models.TextField(blank=True, null=True)
@@ -16,6 +18,7 @@ class Category(models.Model):
 
 
 class Recipe(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, blank=True, null=True)
     title = models.CharField(max_length=50)

@@ -9,7 +9,7 @@
         <h6>and choose a category</h6>
     </div>
     <br><br>
-    <form action="{% url 'recipes:recipe_scraper' %}" method="post">
+    <form action="{% url 'recipes:recipe_scraper' user_pk=user.pk %}" method="post">
         {% csrf_token %}
         <div class="center">
             <div class="column-container" style="border: 1px solid #ccc; border-radius: 15px; padding: 33px; background-color: #383e3e">
@@ -18,7 +18,7 @@
                         {{ form.url.label }}
                         {{ form.url }}
                     </div>
-                    <div class="cat-flex">
+                    <div class="cat-flex" >
                         {{ form.category.label }}
                         {{ form.category }}
                     </div>

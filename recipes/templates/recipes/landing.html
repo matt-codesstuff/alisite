@@ -1,0 +1,16 @@
+{% extends 'recipes/header.html' %}
+{% block content %}
+
+            <div style="text-align: center;">
+                <h1>Welcome to Ali's Kitchen</h1>
+                <h3>The App designed to make storing and accessing your favourite recipes easy</h3>
+                <br>
+                <br>
+                <p><a href="{% url 'recipes:login'  %}"><strong>Login</strong></a></p>
+                <br>
+                <p>New visitor?</p>
+                <p>Register for a new account <a href="{% url 'recipes:register' %}"><strong>here</strong></a></p>
+            </div>
+
+
+{% endblock %}

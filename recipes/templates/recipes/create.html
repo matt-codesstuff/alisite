@@ -6,7 +6,7 @@
     <br>
 
     <!--ingredient form-->
-    <form action="{% url 'recipes:ingredient_handler' action='add' %}" method="POST">
+    <form action="{% url 'recipes:ingredient_handler' user_pk=user.pk action='add' %}" method="POST">
         <div class="center">
             <div style="border: 1px solid #ccc; border-radius:  15px; padding: 33px; background-color: #383e3e">
                 <div class="cat-flex">
@@ -15,8 +15,8 @@
                 </div>
                 <div class="button-flex">
                     <input id="button" type="submit" value="Ingredient">
-                    <button id="button" formaction="{% url 'recipes:ingredient_handler' action='header' %}">Header</button>
-                    <button id="button" formaction="{% url 'recipes:ingredient_handler' action='del' %}">Delete</button>
+                    <button id="button" formaction="{% url 'recipes:ingredient_handler' user_pk=user.pk action='header' %}">Header</button>
+                    <button id="button" formaction="{% url 'recipes:ingredient_handler' user_pk=user.pk action='del' %}">Delete</button>
                 </div>        
                 <div class="row-container">
                     <div class="ingredient-list">
@@ -40,14 +40,14 @@
     <hr>
 
     <!--main recipe form-->
-    <form action="{% url 'recipes:create' ingr_check='not_new' %}" method="POST">
+    <form action="{% url 'recipes:create' user_pk=user.pk ingr_check='not_new' %}" method="POST">
         {% csrf_token %}
             <div class="seperate" style="padding: 25px; display: flex; flex-wrap: wrap;" >
                 <div >
                     <div class="column-container" >
                         <div class="cat-flex">
                             {{rec_form.category.label}}
-                            {{rec_form.category.errors}}{{rec_form.category}}
+                            {{rec_form.category}}
                         </div>
                         <div class="cat-flex">
                             {{rec_form.title.label}}

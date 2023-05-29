@@ -2,100 +2,123 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.urls import reverse
 from django.contrib import messages
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.models import User
+
 from recipe_scrapers import scrape_me
 
 from .forms import RecipeForm, IngredientForm, ScraperForm
 from .models import Recipe, Category
+from .helpers import *
 
 INGREDIENT_LS = []
 
-# view for creating new recipe
-def create(request, ingr_check):
+# landing for the app
+# user needs to login before they can use the app
+def landing(request):
+    return render(request, 'recipes/landing.html'
+    )
+
+# 'homepage' once the user has signed in
+def index(request, user_pk):
+    recipes = Recipe.objects.filter(user__pk=user_pk)
+    categories = Category.objects.filter(user__pk=user_pk)
+
+    # check if a category is empty, and if it is, delete it
+    if categories:
+        for cat in categories:
+            empty_cat = True
+            for rec in recipes:
+                if rec.category.pk == cat.pk:
+                    empty_cat = False
+            if empty_cat:
+                cat_del = Category.objects.get(pk=cat.pk)
+                cat_del.delete()
+
+            # update list of categories to reflect deleted ones    
+            categories = Category.objects.filter(user__pk=user_pk)    
+
+    return render(request, 'recipes/index.html', {
+        'categories': categories,
+        'recipes': recipes,
+    })
+
+
+# creating new recipe
+def create(request, user_pk, ingr_check):
+
+    # ingr_ls needs to be cleared the first time we run this view
     if ingr_check == 'new':
         INGREDIENT_LS.clear()
+
+    # set up initial forms, etc.
+    ingr_form = IngredientForm()
+    rec_form = RecipeForm(user=request.user, initial={'servings': 1})
+    recipes = Recipe.objects.filter(user__pk=user_pk)
+    categories = Category.objects.filter(user__pk=user_pk)
+
     # handle for RecipeForm submission
     if request.method == 'POST':
         form = RecipeForm(request.POST)
         if form.is_valid():
-
-            # check if new category was given
             new_category = request.POST.get('new_category')
+            
+            # check if new category alredy exists
+            category_names = [cat.name for cat in categories]
+            if new_category in category_names:
+                messages.info(request, 'Category Already Exists')
+
+                data = {'category': request.POST.get('category'),
+                        'title': request.POST.get('title'),
+                        'body': request.POST.get('body'),
+                        'servings': request.POST.get('servings'),}
+                
+                rec_form = RecipeForm(initial=data)
+                ingr_form = IngredientForm()
+
+                return render(request, 'recipes/create.html', {
+                    'rec_form': rec_form,
+                    'ingr_form': ingr_form,
+                    'ingr_list': INGREDIENT_LS,
+                    'categories': categories,
+                    'recipes': recipes,
+                })
 
             # handle for new category
             if new_category:
-                cat_image = request.POST.get('cat_image')
-                cat_desctiption = request.POST.get('cat_description')
-                c = Category(name=new_category, image=cat_image,
-                             description=cat_desctiption)
-                c.save()
-                title = request.POST.get('title')
-                body = request.POST.get('body')
-                servings =request.POST.get('servings')
-
-                # list of ingredients is stored as a comma seperated string in Recipe.ingredients
-                # here we create the string to be stored
-                ingr_str = ''
-                for i in INGREDIENT_LS:
-                    ingr_str += f'{i}#'
-
-                # create and save new recipe object
-                r = Recipe(category=c,
-                           title=title,
-                           body=body,
-                           ingredients=ingr_str,
-                           servings=servings)
-                r.save()
-
-                # clear ingredient list and update list of recipes and categories
-                # so new recipe is available in navbar dropdown
+                recipe = create_recipe_new_cat(user_pk, request, INGREDIENT_LS)
+                recipe.save()
                 INGREDIENT_LS.clear()
-                categories = Category.objects.all()
-                recipes = Recipe.objects.all()
 
-                return redirect(reverse('recipes:view_recipe', kwargs={'pk': r.pk}))
+                return redirect(reverse('recipes:view_recipe', kwargs={'user_pk': user_pk,'rec_pk': recipe.pk}))
 
-            # handle for if no new category was given
+            # handle for existing category
             else:
-                category_pk = request.POST.get('category')
-                category = Category.objects.get(pk=category_pk)
-                title = request.POST.get('title')
-                body = request.POST.get('body')
-                servings = request.POST.get('servings')
-
-                # list of ingredients is stored as a comma seperated string in Recipe.ingredients
-                # here we create the string to be stored
-                ingr_str = ''
-                for i in INGREDIENT_LS:
-                    ingr_str += f'{i}#'
-
-                # create and save new recipe object
-                r = Recipe(category=category,
-                           title=title,
-                           body=body,
-                           ingredients=ingr_str,
-                           servings=servings)
-                r.save()
-
-                # clear ingredient list and update list of recipes so new recipe is available in the navbar dropdown
+                recipe = create_recipe_existing_cat(user_pk, request, INGREDIENT_LS, categories)
+                recipe.save()
                 INGREDIENT_LS.clear()
-                recipes = Recipe.objects.all()
 
-                return redirect(reverse('recipes:view_recipe', kwargs={'pk': r.pk}))
+                return redirect(reverse('recipes:view_recipe', kwargs={'user_pk': user_pk,'rec_pk': recipe.pk}))
 
-        # error message if neither an existing category nor new category was given
+        # error message for if no category is given
         else:
             messages.info(request, 'Choose a category or create a new one.')
-            return redirect(reverse('recipes:create', kwargs={'ingr_check': 'not_new'}))
 
-    # set up initial forms, this view uses two forms: one for getting new ingredients and one for the recipe as a whole
-    # set up lists of all categories and recipes. this is used to display the categories -> recipes in dropdown menus in navbar
-    # this will happen in most views so i wont comment it every time
-    ingr_form = IngredientForm()
-    rec_form = RecipeForm(initial={'servings': 1})
-    categories = Category.objects.all()
-    recipes = Recipe.objects.all()
+            data = {'title': request.POST.get('title'),
+                    'body': request.POST.get('body'),
+                    'servings': request.POST.get('servings'),}
+            
+            rec_form = RecipeForm(initial=data)
+            ingr_form = IngredientForm()
+
+            return render(request, 'recipes/create.html', {
+            'rec_form': rec_form,
+            'ingr_form': ingr_form,
+            'ingr_list': INGREDIENT_LS,
+            'categories': categories,
+            'recipes': recipes,
+        })
 
     return render(request, 'recipes/create.html', {
         'rec_form': rec_form,
@@ -105,9 +128,132 @@ def create(request, ingr_check):
         'recipes': recipes,
     })
 
-# view for manipulating the global INGREDIENT_LIST, 
-# the action argument lets the handler know what action is to be taken
-def ingredient_handler(request, action):
+
+# editing a recipe
+def edit_recipe(request, user_pk ,rec_pk):
+
+    # retrieve recipe to be edited
+    recipe = Recipe.objects.get(pk=rec_pk)
+
+    # if INGREDIENT_LS is empty, populate it with data from recipe.ingredients
+    if not INGREDIENT_LS:
+        for ing in recipe.ingredients.split('#')[:-1]:
+            INGREDIENT_LS.append(ing)
+
+    # gather data to populate form to be edited   
+    data = {'category': recipe.category,
+            'title': recipe.title,
+            'body': recipe.body,
+            'servings': recipe.servings }
+
+    rec_form = RecipeForm(initial=data)
+    ingr_form = IngredientForm()
+    recipes = Recipe.objects.filter(user__pk=user_pk)
+    categories = Category.objects.filter(user__pk=user_pk)
+
+    # handle for form submission
+    if request.method == 'POST':
+        form = RecipeForm(request.POST)
+        if form.is_valid():
+            new_category = request.POST.get('new_category')
+
+            # check if new category alredy exists
+            category_names = [cat.name for cat in categories]
+            if new_category in category_names:
+                messages.info(request, 'Category Already Exists')
+                data = {'category': request.POST.get('category'),
+                        'title': request.POST.get('title'),
+                        'body': request.POST.get('body'),
+                        'servings': request.POST.get('servings')}
+                
+                rec_form = RecipeForm(initial=data)
+                ingr_form = IngredientForm()
+
+                return render(request, 'recipes/edit.html', {
+                    'categories': categories,
+                    'recipes': recipes,
+                    'rec_form': rec_form,
+                    'ingr_list': INGREDIENT_LS,
+                    'ingr_form': ingr_form,
+                    'recipe': recipe,
+                })
+            
+            # handle for new category
+            if new_category:
+                recipe = edit_recipe_new_cat(request, INGREDIENT_LS, recipe)
+                recipe.save()           
+                INGREDIENT_LS.clear()
+
+                return redirect(reverse('recipes:view_recipe', kwargs={'user_pk': user_pk, 'rec_pk': rec_pk}))
+
+            # handle for existing category
+            else:
+                recipe = edit_recipe_existing_cat(request, INGREDIENT_LS, recipe, categories )                
+                recipe.save()
+                INGREDIENT_LS.clear()
+
+                return redirect(reverse('recipes:view_recipe', kwargs={'user_pk': user_pk, 'rec_pk': rec_pk}))
+
+    return render(request, 'recipes/edit.html', {
+        'categories': categories,
+        'recipes': recipes,
+        'rec_form': rec_form,
+        'ingr_list': INGREDIENT_LS,
+        'ingr_form': ingr_form,
+        'recipe': recipe,
+    })
+
+
+# lets scrape some recipes!
+def recipe_scraper(request, user_pk):
+
+    # set up forms etc.
+    form = ScraperForm(user=request.user)
+    recipes = Recipe.objects.filter(user__pk=user_pk)
+    categories = Category.objects.filter(user__pk=user_pk)
+
+    # handle for form submission
+    if request.method == 'POST':
+        form = ScraperForm(request.POST)
+        if form.is_valid():            
+            try:
+                recipe_url = request.POST.get('url')
+                online_recipe = scrape_me(recipe_url, wild_mode = True)                                   
+                new_category = request.POST.get('new_category')
+
+                # check if new category alredy exists
+                category_names = [cat.name for cat in categories]
+                if new_category in category_names:
+                    messages.info(request, 'Category Already Exists')
+                    return redirect(reverse('recipes:recipe_scraper', kwargs={'user_pk': user_pk}))
+                
+                # handle for new category
+                if new_category:                   
+                    recipe = scrape_recipe_new_cat(user_pk, request, online_recipe)
+                    recipe.save()                   
+                    
+                    return  redirect(reverse('recipes:view_recipe', kwargs={'user_pk': user_pk,'rec_pk': recipe.pk}))
+
+                # handle for existing category 
+                else:
+                    recipe = scrape_recipe(user_pk, request, online_recipe, None)
+                    recipe.save()
+
+                    return  redirect(reverse('recipes:view_recipe', kwargs={'user_pk': user_pk,'rec_pk': recipe.pk}))
+                
+            except:
+                messages.error(request, 'Something went wrong. It is likely that this URL does not contain a recipe')
+                return redirect(reverse('recipes:recipe_scraper', kwargs={'user_pk': user_pk})) 
+
+    return render(request, 'recipes/scraper.html', {
+        'form': form,
+        'recipes': recipes,
+        'categories': categories
+    })
+
+  
+# manipulate INGREDIENT_LS, the action argument lets the handler know what action is to be taken
+def ingredient_handler(request, user_pk, action):
     if request.method == 'POST':
         form = IngredientForm(request.POST)
         if form.is_valid():
@@ -133,53 +279,17 @@ def ingredient_handler(request, action):
             ingr_str += f'{i}#'
         recipe.ingredients = ingr_str
         recipe.save()
-        return redirect(reverse('recipes:edit_recipe', kwargs={'pk': recipe_pk}))
+        user_pk = recipe.user.pk
+        return redirect(reverse('recipes:edit_recipe', kwargs={'user_pk': user_pk,'rec_pk': recipe_pk}))
     
-    return redirect(reverse('recipes:create', kwargs={'ingr_check': 'not_new'}))
+    return redirect(reverse('recipes:create', kwargs={'user_pk': user_pk,'ingr_check': 'not_new'}))
 
-# initial 'homepage' for the site. this view displays clickable cards for each category
-def index(request):
-    categories = Category.objects.all()
-    recipes = Recipe.objects.all()
 
-    # when a recipe has been deleted, the user gets redirected to the index page
-    # sometimes that means that a category will be empty
-    # here we check if a category is empty, and if it is, delete it
-    for cat in categories:
-        empty_cat = True
-        for rec in recipes:
-            if rec.category.pk == cat.pk:
-                empty_cat = False
-        if empty_cat:
-            cat_del = Category.objects.get(pk=cat.pk)
-            cat_del.delete()
-
-            # update list of categories to reflect the deleted one
-            categories = Category.objects.all()
-
-    return render(request, 'recipes/index.html', {
-        'categories': categories,
-        'recipes': recipes,
-    })
-
-# after clicking on a category on the index page, you are taken to this view which displays an unordered list
-# of all recipes in said category
-def view_cat(request, pk):
-    categories = Category.objects.all()
-    recipes = Recipe.objects.all()
-    cat_recipes = Recipe.objects.filter(category__pk=pk)
-
-    return render(request, 'recipes/view_cat.html', {
-        'cat_recipes': cat_recipes,
-        'categories': categories,
-        'recipes': recipes,
-    })
-
-# view for viewing a recipe
-def view_recipe(request, pk):
-    categories = Category.objects.all()
-    recipes = Recipe.objects.all()
-    recipe = Recipe.objects.get(pk=pk)
+# viewing a recipe
+def view_recipe(request, user_pk ,rec_pk):
+    recipes = Recipe.objects.filter(user__pk=user_pk)
+    categories = Category.objects.filter(user__pk=user_pk)
+    recipe = Recipe.objects.get(pk=rec_pk)
     ingr_list = recipe.ingredients.split('#')[:-1]
 
     return render(request, 'recipes/view_recipe.html', {
@@ -189,193 +299,59 @@ def view_recipe(request, pk):
         'recipes': recipes,
     })
 
-# view for editing a recipe
-# I realise this view looks a lot like the create view and thus contains a lot of redundancy
-# initially i did try and handle for editing the recipe in the create view, but i just couldn't get it to work
-def edit_recipe(request, pk):
-    # handle for RecipeForm submission
-    if request.method == 'POST':
-        form = RecipeForm(request.POST)
-        if form.is_valid():
 
-            # get the specific recipe to be edited by pk
-            recipe = Recipe.objects.get(pk=pk)
-
-            # check if new category has been given and handle accordingly
-            new_category = request.POST.get('new_category')
-            if new_category:
-                cat_image = request.POST.get('cat_image')
-                cat_description = request.POST.get('cat_description')
-                c = Category(name=new_category, image=cat_image, description=cat_description)
-                c.save()
-
-                # update list of categories so new category is available in navbar
-                categories = Category.objects.all()
-
-                # update fields of edited recipe
-                recipe.category = c
-                recipe.title = request.POST.get('title')
-                recipe.body = request.POST.get('body')
-                recipe.servings = request.POST.get('servings')
-                ingr_str = ''
-
-                # list of ingredients is stored as a comma seperated string in Recipe.ingredients
-                # here we create the string to be stored
-                for i in INGREDIENT_LS:
-                    ingr_str += f'{i}#'
-                recipe.ingredients = ingr_str
-
-                # save recipe, clear INGREDIENT_LS and serve redirect to view of newly updated recipe
-                recipe.save()
-                INGREDIENT_LS.clear()
-                return redirect(f'/view_recipe/{recipe.pk}')
-
-            # handle for if no new category was given
-            else:
-                category_pk = request.POST.get('category')
-                category = Category.objects.get(pk=category_pk)
-                recipe.category = category
-                recipe.title = request.POST.get('title')
-                recipe.body = request.POST.get('body')
-                recipe.servings = request.POST.get('servings')
-                ingr_str = ''
-
-                for i in INGREDIENT_LS:
-                    ingr_str += f'{i}#'
-                recipe.ingredients = ingr_str
-                # save recipe, clear INGREDIENT_LS and serve redirect to view of newly updated recipe
-
-                recipe.save()
-                INGREDIENT_LS.clear()
-                return redirect(f'/view_recipe/{recipe.pk}')
-
-        # error message for if no category was given
-        else:
-            messages.info(request, 'Choose a category or create a new one.')
-            return redirect(reverse('recipes:edit_recipe', kwargs={'pk': pk}))
-
-    else:
-        categories = Category.objects.all()
-        recipes = Recipe.objects.all()
-
-        # get the specific recipe by pk to populate RecipeForm with initial data to be edited
-        recipe = Recipe.objects.get(pk=pk)
-
-        # if INGREDIENT_LS is empty, populate it with data from recipe.ingredients
-        # it is important to check if the list is empty first or else this code will run 
-        # every time the user is redirected to this view
-        if not INGREDIENT_LS:
-            for ing in recipe.ingredients.split('#')[:-1]:
-                INGREDIENT_LS.append(ing)
-
-        data = {'category': recipe.category,
-                'title': recipe.title,
-                'body': recipe.body,
-                 'servings': recipe.servings }
-
-        rec_form = RecipeForm(initial=data)
-        ingr_form = IngredientForm()
-
-        return render(request, 'recipes/edit.html', {
-            'categories': categories,
-            'recipes': recipes,
-            'rec_form': rec_form,
-            'ingr_list': INGREDIENT_LS,
-            'ingr_form': ingr_form,
-            'recipe': recipe,
-        })
-
-# simple view for deleting a recipe
-def delete_recipe(request, pk):
-    recipe = Recipe.objects.get(pk=pk)
+# deleting a recipe
+def delete_recipe(request, rec_pk):
+    recipe = Recipe.objects.get(pk=rec_pk)
+    user = recipe.user
+    user_pk = user.pk
     recipe.delete()
     INGREDIENT_LS.clear()
-    return redirect('recipes:index')
-
-# lets scrape some recipes!
-def recipe_scraper(request):
-    if request.method == 'POST':
-        form = ScraperForm(request.POST)
-        if form.is_valid():
-            recipe_url = request.POST.get('url')
-            try:
-                online_recipe = scrape_me(recipe_url, wild_mode = True)                    
-                # check if new category is given
-                new_category = request.POST.get('new_category')
-                # create and save new category
-                if new_category:
-                    cat_image = request.POST.get('cat_image')
-                    cat_description = request.POST.get('cat_description')
-                    c = Category(name=new_category, image=cat_image, description=cat_description)
-                    c.save()
-                    ingr_str = ''
-                    for i in online_recipe.ingredients():
-                        ingr_str += f'{i}#'
-                    online_title = online_recipe.title()
-                    servings = int(online_recipe.yields()[0])
-                    site = online_recipe.host()
-                    if len(online_recipe.instructions_list()) < 7:
-                        formatted_body = ''
-                        step_count = 1
-                        for instruction in online_recipe.instructions_list():
-                            formatted_body += f'<strong><small>Step {step_count}</small></strong><br>{instruction} <br /><br />'
-                            step_count += 1
-                    else:
-                        formatted_body = ''
-                        for instruction in online_recipe.instructions_list():
-                            formatted_body += f'<li>{instruction} <br /><br />'        
-                    r = Recipe(title =online_title, category=c, body=formatted_body, ingredients=ingr_str, servings=servings, site=site)
-                    r.save()
-                    return  redirect(reverse('recipes:view_recipe', kwargs={'pk': r.pk})) 
-                else:
-                    cat_pk = request.POST.get('category')
-                    c = Category.objects.get(pk=cat_pk)
-                    ingr_str = ''
-                    for i in online_recipe.ingredients():
-                        ingr_str += f'{i}#'
-                    online_title = online_recipe.title()
-                    servings = int(online_recipe.yields()[0])
-                    site = online_recipe.host()
-                    if len(online_recipe.instructions_list()) < 9:
-                        formatted_body = ''
-                        step_count = 1
-                        for instruction in online_recipe.instructions_list():   
-                            formatted_body += f'<strong><small>Step {step_count}</small></strong><br>{instruction} <br /><br />'
-                            step_count += 1
-                    else:
-                        formatted_body = ''
-                        for instruction in online_recipe.instructions_list():
-                            formatted_body += f'<li>{instruction} <br /><br />'         
-                    
-                    r = Recipe(title =online_title, category=c, body=formatted_body, ingredients=ingr_str, servings=servings, site=site)
-                    r.save()
-                    return  redirect(reverse('recipes:view_recipe', kwargs={'pk': r.pk}))
-                
-            except:
-                messages.error(request, 'Something went wrong. It is likely that this URL does not contain a recipe')
-                return redirect('recipes:recipe_scraper') 
+    return redirect(reverse('recipes:index', kwargs={'user_pk': user_pk}))
 
 
-    form = ScraperForm()
-    recipes = Recipe.objects.all()
-    categories = Category.objects.all()
-    return render(request, 'recipes/scraper.html', {
-        'form': form,
-        'recipes': recipes,
-        'categories': categories
-    })
-
+# register a new user
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('recipes:index')
+            return redirect(reverse('recipes:index', kwargs={'user_pk': user.pk}))
         else:
             for msg in form.error_messages:
-                print(form.error_messages[msg])
+                messages.error(request, form.error_messages[msg])
+
     form = UserCreationForm()
     return render(request, 'recipes/register.html', {
+        'form': form,
+    })
+
+
+# logout user
+def logout_request(request, user_pk):
+    logout(request)
+    messages.info(request, "Logged out successfully")
+    return redirect('recipes:landing')
+
+
+# login user
+def login_request(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect(reverse('recipes:index', kwargs={'user_pk': user.pk}))
+            else:
+                messages.error(request, 'Invalid username or password')
+        else:
+            messages.error(request, 'Invalid username or password')     
+
+    form = AuthenticationForm
+    return render(request, 'recipes/login.html', {
         'form': form,
     })

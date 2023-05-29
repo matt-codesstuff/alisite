@@ -20,11 +20,18 @@ class RecipeForm(forms.ModelForm):
     cat_image = forms.URLField(required=False, label="Image", widget=forms.TextInput(
         attrs={'placeholder': 'paste link here'}))
     cat_description = forms.CharField(required=False, label="Description", widget=forms.Textarea(
-        attrs={'rows': '4', 'cols': '12', 'placeholder': 'Short description of new category'}))
+        attrs={'rows': '4', 'cols': '12', 'placeholder': 'Short description of category'}))
+    category = forms.ModelChoiceField(required=False, queryset=Category.objects.all())
 
+    def __init__(self, *args, user=None ,**kwargs):
+        super().__init__(*args, **kwargs)
+        if user:
+            category = self.fields['category']
+            category.queryset = Category.objects.filter(user__pk=user.pk)
+               
     class Meta:
         model = Recipe
-        fields = ['category', 'title', 'body', 'servings']
+        fields = ['title', 'body', 'servings']
         widgets = {
             'body': CKEditorWidget(),
         }
@@ -36,14 +43,20 @@ class RecipeForm(forms.ModelForm):
         if not category and not new_category:
             raise forms.ValidationError(
                 "Please choose a category or create a new one.")
-        
+     
 
 class ScraperForm(forms.Form):
     url = forms.URLField(label="Recipe URL", widget=forms.TextInput(
         attrs={'placeholder': 'paste link here'}))
-    category = forms.ModelChoiceField(required=False, queryset=Category.objects.all())
     new_category = forms.CharField(required=False, label="New Category")
     cat_image = forms.URLField(required=False, label="Image", widget=forms.TextInput(
         attrs={'placeholder': 'paste link here'}))
     cat_description = forms.CharField(required=False, label="Description", widget=forms.Textarea(
         attrs={'rows': '4', 'cols': '12', 'placeholder': 'Short description of new category'}))        
+    category = forms.ModelChoiceField(required=False, queryset=Category.objects.all())
+
+    def __init__(self, *args, user=None ,**kwargs):
+        super().__init__(*args, **kwargs)
+        if user:
+            category = self.fields['category']
+            category.queryset = Category.objects.filter(user__pk=user.pk)
