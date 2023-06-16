@@ -1,16 +1,16 @@
 {% extends 'recipes/header.html' %}
 {% block content %}
-    <div>
+    <div style="display: flex; justify-content: center;">
         {% if user.is_authenticated %}
-            <div class="row">
+            <div class="row" style="display: flex; justify-content: center;">
                 {% if categories %}
                     {% for cat in categories %}        
-                        <div class="card" style="width: 18rem; margin: 15px; background-color: rgba(132, 136, 136, 0.76); border: 2px solid rgb(99, 104, 104); padding: 15px; color: whitesmoke">
+                        <div class="card" style="width: 18rem; margin: 15px; background-color: #383e3e; border: 1px solid #a9aaaa; padding: 15px; color: whitesmoke">
 
-                                <img class="card-img-top" src="{{ cat.image }}" alt="No Image" width='250' height='300' style="border: 1px solid rgb(156, 149, 149);">
+                                <img class="card-img-top" src="{{ cat.image }}" alt="No Image" width='250' height='300'>
 
                             <div class="card-body">
-                                <h5 class="card-title">{{ cat.name }}</h5>
+                                <h5 class="card-title">{{ cat.name| title }}</h5>
                                 <p class="card-text">{{cat.description}}</p>
                             </div>
                             <div class="dropdown">
@@ -20,7 +20,7 @@
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     {% for rec in recipes|dictsort:"title" %}
                                         {% if rec.category == cat %}
-                                            <a class="dropdown-item" href="{% url 'recipes:view_recipe' user_pk=user.pk rec_pk=rec.pk %}">{{rec}}</a>
+                                            <a class="dropdown-item" href="{% url 'recipes:view_recipe' rec_pk=rec.pk %}">{{rec}}</a>
                                         {% endif %}
                                     {% endfor %}
                                 
@@ -29,11 +29,11 @@
                         </div>       
                     {% endfor %}    
                 {% else %}
-                    <h5 style="text-align: center;">No Recipes</h5>
+                    <h3 style="text-align: center;">No Recipes</h3>
                     <br><br>
-                    <h6 style="text-align: center;">Click on <a href="/create/{{user.pk}}/'new'">"New"</a> to enter some recipes</h6>
+                    <h6 style="text-align: center;">Click on <a href="/create/'new'">"New"</a> to enter some recipes</h6>
                     <br>
-                    <h6 style="text-align: center;">Or click on <a href="/recipe_scraper/{{user.pk}}">"From The Internet"</a> to download recipes</h6>
+                    <h6 style="text-align: center;">Or click on <a href="/get_recipe">"From The Internet"</a> to download recipes</h6>
                 {% endif %}
         {% else %}
             <div style="text-align: center;">

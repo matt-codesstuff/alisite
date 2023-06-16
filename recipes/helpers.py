@@ -4,15 +4,19 @@ from django.http import HttpResponse
 from .models import Category, Recipe
 
 def get_new_cat(request):
+
+    # get fields ready
     user = request.user 
     name = request.POST.get('new_category')
     image = request.POST.get('cat_image')
     description = request.POST.get('cat_description')
-    c = Category(user=user,
+
+    # create new category and return to function to be saved
+    category = Category(user=user,
                  name=name,
                  image=image,
                  description=description)
-    return c
+    return category
 
 def create_recipe_new_cat(user_pk, request, ingr_ls):
 
@@ -20,23 +24,22 @@ def create_recipe_new_cat(user_pk, request, ingr_ls):
     new_cat = get_new_cat(request)   
     new_cat.save()
 
-    # create recipe and return to view to be saved
+    # get fields ready
     user = User.objects.get(pk=user_pk)
     title = request.POST.get('title')
     body = request.POST.get('body')
     servings = request.POST.get('servings')
-    ingr_string = ''
-    for i in ingr_ls:
-        ingr_string += f'{i}#'
+    ingr_string = '#'.join(ingr for ingr in ingr_ls)
 
-    r = Recipe(category=new_cat,
+    # create recipe and return to view to be saved
+    recipe = Recipe(category=new_cat,
                user=user,
                title=title,
                body = body,
                servings=servings,
                ingredients=ingr_string)
 
-    return r
+    return recipe
 
 def create_recipe_existing_cat(user_pk, request, ingr_ls, categories):
 
@@ -47,18 +50,16 @@ def create_recipe_existing_cat(user_pk, request, ingr_ls, categories):
     title = request.POST.get('title')
     body = request.POST.get('body')
     servings = request.POST.get('servings')
-    ingr_string = ''
-    for i in ingr_ls:
-        ingr_string += f'{i}#'
+    ingr_string = '#'.join(ingr for ingr in ingr_ls)
 
-    r = Recipe(category=category,
+    recipe = Recipe(category=category,
             user=user,
             title=title,
             body = body,
             servings=servings,
             ingredients=ingr_string)
 
-    return r 
+    return recipe 
 
 def edit_recipe_new_cat(request, ingr_ls, recipe):
     
@@ -71,9 +72,7 @@ def edit_recipe_new_cat(request, ingr_ls, recipe):
     recipe.title = request.POST.get('title')
     recipe.body = request.POST.get('body')
     recipe.servings =request.POST.get('sercings')
-    ingr_str = ''
-    for i in ingr_ls:
-        ingr_str += f'{i}#'
+    ingr_str = '#'.join(ingr for ingr in ingr_ls)
     recipe.ingredients = ingr_str
 
     return recipe
@@ -87,9 +86,7 @@ def edit_recipe_existing_cat(request, ingr_ls, recipe, categories):
     recipe.title = request.POST.get('title')
     recipe.body = request.POST.get('body')
     recipe.servings = request.POST.get('servings')
-    ingr_string = ''
-    for i in ingr_ls:
-        ingr_string += f'{i}#'
+    ingr_string = '#'.join(ingr for ingr in ingr_ls)
     recipe.ingredients = ingr_string
 
     return recipe
@@ -106,42 +103,46 @@ def scrape_recipe_new_cat(user_pk, request, online_recipe):
 
 def scrape_recipe(user_pk, request, online_recipe, new_cat):
     
-    # create recipe and return to view to be saved
+    # check if new category
     if new_cat:
         category = new_cat
     else:
         category_pk = request.POST.get('category')
         category = Category.objects.get(pk=category_pk)    
-       
+
+    # get the fields ready   
     user = User.objects.get(pk=user_pk)
     title = online_recipe.title()
     servings = int(online_recipe.yields()[0])
     site = online_recipe.host()
-    ingr_str = ''
-    for i in online_recipe.ingredients():
-        ingr_str += f'{i}#'     
+    ingr_str = '#'.join(ingr for ingr in online_recipe.ingredients())
 
-    # formatting the body
-    if len(online_recipe.instructions_list()) < 7:
+    # format the body
+    body_len = len(online_recipe.instructions_list())    
+    if body_len < 7:
         formatted_body = ''
         step_count = 1
         for instruction in online_recipe.instructions_list():
             formatted_body += f'<strong><small>Step {step_count}</small></strong><br />{instruction} <br /><br />'
             step_count += 1
     else:
-        formatted_body = ''
-        for instruction in online_recipe.instructions_list():
-            formatted_body += f'<li>{instruction} <br /><br />'           
-            
-    r = Recipe(user=user,
+        formatted_body = '<ul>'
+        for i, instruction in enumerate(online_recipe.instructions_list(), 1):
+            if i == body_len:
+                formatted_body += f'<li>{instruction}<br /><br/></ul>' 
+            else:
+                formatted_body += f'<li>{instruction}<br /><br />'              
+
+    # create recipe and return to view to be saved        
+    recipe = Recipe(user=user,
                 title =title, 
                 category=category, 
                 body=formatted_body, 
                 ingredients=ingr_str, 
                 servings=servings, 
                 site=site)
-       
-    return r
+           
+    return recipe
 
 
 

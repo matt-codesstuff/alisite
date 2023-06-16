@@ -2,14 +2,14 @@
 
 {% block content %}
     <div style="text-align: center;">
-        <h3>Get Recipe From The Internet</h3>
+        <h1>From The Internet</h1>
         <hr>
         <br>
         <h6>Paste the URL for the recipe you wish to save</h6>
         <h6>and choose a category</h6>
     </div>
     <br><br>
-    <form action="{% url 'recipes:recipe_scraper' user_pk=user.pk %}" method="post">
+    <form action="{% url 'recipes:get_recipe' %}" method="post">
         {% csrf_token %}
         <div class="center">
             <div class="column-container" style="border: 1px solid #ccc; border-radius: 15px; padding: 33px; background-color: #383e3e">
@@ -43,20 +43,9 @@
                 <br><br>
                 <div style="display: flex; justify-content: center;">
                     <input id="button" type="submit" value="go!">
-                </div>
-
-                
-            </div>
-            
-
-
-
-
-
-
-            
+                </div>               
+            </div>            
         </div>
-
     </form>
 
 {% endblock %}

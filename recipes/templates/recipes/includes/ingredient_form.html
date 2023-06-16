@@ -1,0 +1,35 @@
+<div class="center">
+    <div style="border: 1px solid #a9aaaa; border-radius:  15px; padding: 33px; background-color: #383e3e">
+        <div class="cat-flex">
+        <!--csrf_token and ingredient form-->
+            {% csrf_token %}
+            {{ingr_form}}
+        </div>
+        <div class="button-flex">
+        <!--form buttons-->
+            <input id="button" type="submit" value="Ingredient">
+            <button id="button" formaction="/ingredient_handler/header,{{recipe.pk}}">Header</button>
+            <button id="button" formaction="/ingredient_handler/del,{{recipe.pk}}">Delete</button>
+        </div>        
+        <div class="row-container">
+            <div class="ingredient-list">
+            <!--list ingredients-->
+            <!--if '!' is appended to start, the ingredient is a heading and is printed in bold-->
+            <!--the '!' gets sliced off the end-->
+                {% if ingr_list %}
+                    <ul>
+                    {% for i in ingr_list %}
+                        {% if i.0 == '!' %}
+                            <br>
+                            <strong>{{i| slice:'1:'}}</strong>
+                        {% else %}
+                            <li>{{i}}</li>
+                        {% endif %}
+                    {% endfor %}
+                    </ul>
+                {% endif %}        
+
+            </div>
+        </div>
+    </div>
+</div>

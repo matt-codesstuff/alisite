@@ -1,3 +1,13 @@
+@font-face {
+  font-family: 'AmbitionAndInk';
+  src: url('fonts/Ambition\ &\ Ink\ Demo.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'AlwaysForever';
+  src: url('fonts/always\ forever.ttf') format('truetype');
+}
+
 a {
   text-decoration: none;
   color: rgb(104, 180, 222);
@@ -17,6 +27,25 @@ hr {
   padding: 0;
 }
 
+h1 {
+  text-align: center; 
+  margin-bottom: 50px; 
+  font-family: AmbitionAndInk; 
+  font-size: 4rem;
+}
+
+h3 {
+  text-align: center; 
+  font-family: AmbitionAndInk; 
+  font-size: 3rem;
+}
+
+h6 {
+  text-align: center; 
+  font-family: AmbitionAndInk; 
+  font-size: 2rem;
+}
+
 .row-container {
     display: flex;
     flex-direction: row;        
@@ -30,8 +59,6 @@ hr {
 .seperate {
   display: flex;
   justify-content: space-between;
-  
-
 }
 
 .ingredient-list {
@@ -39,7 +66,6 @@ hr {
   color:#2C3333;
   width: 350px;
   min-height: 500px;
-
   padding: 10px;
   margin-bottom: 50px;
   border-radius: 3px;
@@ -100,14 +126,16 @@ hr {
 
 
 #button {
-  width: 110px;
-  border-radius: 5px;
+  width: 115px;
+  border-radius: 8px;
   margin: 3px;
-  border: 1px solid whitesmoke;
+  background-color: rgb(185, 186, 187);
+  border: none;
 }
 
 #button:hover {
-  background-color: rgb(173, 182, 196);
+  background-color: #7a56b9;
+  color: whitesmoke;
 
 
 }

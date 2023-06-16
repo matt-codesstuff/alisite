@@ -10,22 +10,26 @@
         <h4><small style="color: rgb(168, 167, 167)">(serves {{ recipe.servings }})</small></h4>
       {% endif %}  
     </div>
+    <!--list ingredients-->
+    <!--if '!' is appended to start, the ingredient is a heading and is printed in bold-->
+    <!--the '!' gets sliced off the end-->
+    {% if ingr_list %}
+      <hr>
+      <div>
+        <ul>
+          {% for i in ingr_list %} 
+            {% if i.0 == '!' %}
+              <br>
+              <strong>{{i| slice:'1:'}}</strong>
+            {% else %}
+              <li>{{i}}</li>
+            {% endif %} 
+          {% endfor %}
+        </ul>
+      </div>
+      <hr>
+    {% endif %}
 
-    <hr>
-    <div>
-      <ul>
-        {% for i in ingr_list %} 
-          {% if i.0 == '!' %}
-            <br>
-            <strong>{{i|slice:'1:'}}</strong>
-          {% else %}
-            <li>{{i}}</li>
-          {% endif %} 
-        {% endfor %}
-      </ul>
-    </div>
-
-    <hr>
     <br>
     <div class="center">
       <div class="recipe-text">
@@ -37,7 +41,7 @@
   <br><br><br>
   <div class="center">
     <div class="edit-button">
-      <a href="{% url 'recipes:edit_recipe' user_pk=user.pk rec_pk=recipe.pk %}">
+      <a href="{% url 'recipes:edit_recipe' rec_pk=recipe.pk %}">
         <button id="button">Edit</button>
       </a>
     </div>
