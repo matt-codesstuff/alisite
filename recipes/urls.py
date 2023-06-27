@@ -5,8 +5,7 @@ from . import views
 app_name = 'recipes'
 
 urlpatterns = [
-    path('', views.landing, name='landing'),
-    path('index', views.index, name='index'),
+    path('', views.index, name='index'),
     path('create/<str:ingr_check>', views.create, name='create'),
     path('ingredient_handler/<str:action>',views.ingredient_handler, name='ingredient_handler'),
     path('view_recipe/<int:rec_pk>', views.view_recipe, name='view_recipe'),

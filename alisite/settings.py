@@ -46,11 +46,22 @@ INSTALLED_APPS = [
 ]
 
 CKEDITOR_CONFIGS = {
-    'default': {
-        'toolbar': 'standard',
-        'height': 650,
+   'default': {
+       'toolbar_Full': [
+            ['Styles', 'Format', 'Bold', 'Italic', 'Underline', 'Strike', 'SpellChecker', 'Undo', 'Redo'],
+            ['Link', 'Unlink', 'Anchor'],
+            ['Image', 'Flash', 'Table', 'HorizontalRule'],
+            ['TextColor', 'BGColor'],
+            ['Smiley', 'SpecialChar'], ['Source'],
+            ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+            ['NumberedList','BulletedList'],
+            ['Indent','Outdent'],
+            ['Maximize'],
+        ],
         'width': '100%',
-    },
+        'height': '1000',
+        'extraPlugins': 'justify,liststyle,indent',       
+   },
 }
 
 MIDDLEWARE = [

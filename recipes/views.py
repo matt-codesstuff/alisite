@@ -13,13 +13,7 @@ from .helpers import *
 
 INGREDIENT_LS = []
 
-# landing for the app
-# user needs to login before they can use the app
-def landing(request):
-    return render(request, 'recipes/landing.html'
-    )
-
-# 'homepage' once the user has signed in
+# homepage
 def index(request):
     user_pk = request.user.pk
     recipes = Recipe.objects.filter(user__pk=user_pk)
@@ -67,36 +61,37 @@ def create(request, ingr_check):
             # check if new category was given
             new_category = request.POST.get('new_category')
             
-            # check if new category alredy exists
-            category_names = [cat.name for cat in categories]
-            if new_category in category_names:
-                messages.info(request, 'Category Already Exists')
-
-                data = {'category': request.POST.get('category'),
-                        'title': request.POST.get('title'),
-                        'body': request.POST.get('body'),
-                        'servings': request.POST.get('servings'),}
-                
-                rec_form = RecipeForm(initial=data)
-                ingr_form = IngredientForm()
-
-                return render(request, 'recipes/create.html', {
-                    'rec_form': rec_form,
-                    'ingr_form': ingr_form,
-                    'ingr_list': INGREDIENT_LS,
-                    'categories': categories,
-                    'recipes': recipes,
-                })
-
-            # handle for new category
             if new_category:
+
+                # check if new category alredy exists
+                category_names = [cat.name for cat in categories]
+                if new_category in category_names:
+                    messages.info(request, 'Category Already Exists')
+
+                    data = {'category': request.POST.get('category'),
+                            'title': request.POST.get('title'),
+                            'body': request.POST.get('body'),
+                            'servings': request.POST.get('servings'),}
+                    
+                    rec_form = RecipeForm(initial=data)
+                    ingr_form = IngredientForm()
+
+                    return render(request, 'recipes/create.html', {
+                        'rec_form': rec_form,
+                        'ingr_form': ingr_form,
+                        'ingr_list': INGREDIENT_LS,
+                        'categories': categories,
+                        'recipes': recipes,
+                    })
+
+            # create recipe with new category            
                 recipe = create_recipe_new_cat(user_pk, request, INGREDIENT_LS)
                 recipe.save()
                 INGREDIENT_LS.clear()
 
                 return redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))
 
-            # handle for existing category
+            # create recipe with existing category
             else:
                 recipe = create_recipe_existing_cat(user_pk, request, INGREDIENT_LS, categories)
                 recipe.save()
@@ -150,10 +145,11 @@ def edit_recipe(request, rec_pk):
     data = {'category': recipe.category,
             'title': recipe.title,
             'body': recipe.body,
-            'servings': recipe.servings }
+            'servings': recipe.servings
+              }
     
     # set up forms etc.
-    rec_form = RecipeForm(initial=data)
+    rec_form = RecipeForm(initial=data, user=request.user)
     ingr_form = IngredientForm()
     recipes = Recipe.objects.filter(user__pk=user_pk)
     categories = Category.objects.filter(user__pk=user_pk)
@@ -166,7 +162,7 @@ def edit_recipe(request, rec_pk):
             # check if new category is given           
             new_category = request.POST.get('new_category')
 
-            # check if new category alredy exists
+            # check if new category already exists
             category_names = [cat.name for cat in categories]
             if new_category in category_names:
                 messages.info(request, 'Category Already Exists')
@@ -196,9 +192,8 @@ def edit_recipe(request, rec_pk):
                 return redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': rec_pk}))
 
             # handle for existing category
-            else:
-                
-                recipe = edit_recipe_existing_cat(request, INGREDIENT_LS, recipe, categories )                
+            else:               
+                recipe = edit_recipe_existing_cat(request, INGREDIENT_LS, recipe)                
                 recipe.save()
                 INGREDIENT_LS.clear()
 
@@ -347,7 +342,7 @@ def register(request):
 def logout_request(request):
     logout(request)
     messages.info(request, "Logged out successfully")
-    return redirect('recipes:landing')
+    return redirect('recipes:index')
 
 
 # login user
@@ -362,11 +357,13 @@ def login_request(request):
                 login(request, user)
                 return redirect('recipes:index')
             else:
-                messages.error(request, 'Invalid username or password')
+                for msg in form.error_messages:
+                    messages.error(request, form.error_messages[msg])
         else:
-            messages.error(request, 'Invalid username or password')     
+            for msg in form.error_messages:
+                messages.error(request, form.error_messages[msg])    
 
-    form = AuthenticationForm
+    form = AuthenticationForm()
     return render(request, 'recipes/login.html', {
         'form': form,
     })

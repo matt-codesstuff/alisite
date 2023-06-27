@@ -77,7 +77,7 @@ def edit_recipe_new_cat(request, ingr_ls, recipe):
 
     return recipe
 
-def edit_recipe_existing_cat(request, ingr_ls, recipe, categories):
+def edit_recipe_existing_cat(request, ingr_ls, recipe):
 
     # edit recipe and return to view to be saved
     category_pk = request.POST.get('category')
@@ -123,15 +123,15 @@ def scrape_recipe(user_pk, request, online_recipe, new_cat):
         formatted_body = ''
         step_count = 1
         for instruction in online_recipe.instructions_list():
-            formatted_body += f'<strong><small>Step {step_count}</small></strong><br />{instruction} <br /><br />'
+            formatted_body += f'<strong>Step {step_count}</strong><br />{instruction} <br /><br />'
             step_count += 1
     else:
         formatted_body = '<ul>'
         for i, instruction in enumerate(online_recipe.instructions_list(), 1):
             if i == body_len:
-                formatted_body += f'<li>{instruction}<br /><br/></ul>' 
+                formatted_body += f'<li>{instruction}</li></ul><br/>' 
             else:
-                formatted_body += f'<li>{instruction}<br /><br />'              
+                formatted_body += f'<li>{instruction}</li><br />'              
 
     # create recipe and return to view to be saved        
     recipe = Recipe(user=user,
