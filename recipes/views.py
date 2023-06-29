@@ -9,7 +9,7 @@ from recipe_scrapers import scrape_me
 
 from .forms import RecipeForm, IngredientForm, ScraperForm
 from .models import Recipe, Category
-from .helpers import *
+from .utils import *
 
 INGREDIENT_LS = []
 
@@ -41,6 +41,7 @@ def index(request):
 
 # creating new recipe
 def create(request, ingr_check):
+    global INGREDIENT_LS
     user_pk = request.user.pk
 
     # ingr_ls needs to be cleared the first time we run this view
@@ -59,8 +60,7 @@ def create(request, ingr_check):
         if form.is_valid():
 
             # check if new category was given
-            new_category = request.POST.get('new_category')
-            
+            new_category = request.POST.get('new_category')            
             if new_category:
 
                 # check if new category alredy exists
@@ -285,7 +285,6 @@ def ingredient_handler(request, action):
         recipe_pk = action.split(',')[-1]
         recipe = Recipe.objects.get(pk=recipe_pk)
         ingr_str = '#'.join(ingr for ingr in INGREDIENT_LS)
-
         recipe.ingredients = ingr_str
         recipe.save()
         return redirect(reverse('recipes:edit_recipe', kwargs={'rec_pk': recipe_pk}))

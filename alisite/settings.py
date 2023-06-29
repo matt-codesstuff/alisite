@@ -59,7 +59,7 @@ CKEDITOR_CONFIGS = {
             ['Maximize'],
         ],
         'width': '100%',
-        'height': '1000',
+        'height': '740',
         'extraPlugins': 'justify,liststyle,indent',       
    },
 }
@@ -145,6 +145,7 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = 'static/'
+
 MEDIA_ROOT = ''
 MEDIA_URL = ''
 
