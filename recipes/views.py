@@ -682,7 +682,7 @@ def ingredient_handler(request, action):
 
 
 
-
+'''
         # custom form validation written in forms.py fo ensure no empty string is appended to the list
         if form.is_valid():
             ingredient = request.POST.get('ingredient')
@@ -696,11 +696,11 @@ def ingredient_handler(request, action):
         if 'del' in action:
             if INGREDIENT_LS:
                 del INGREDIENT_LS[-1]
-    '''
-    when the INGREDIENT_LS gets manipulated in the edit.html template, the recipe pk gets appended to the end of the 'action'
-    this is handy because we need to update and save the ingredients for this recipe before the redirect
-    we also need to serve the recipe pk as an argument for the redirect
-    '''
+
+    #when the INGREDIENT_LS gets manipulated in the edit.html template, the recipe pk gets appended to the end of the 'action'
+    #this is handy because we need to update and save the ingredients for this recipe before the redirect
+    #we also need to serve the recipe pk as an argument for the redirect
+
     if action[-1].isnumeric():
         recipe_pk = action.split(',')[-1]
         recipe = Recipe.objects.get(pk=recipe_pk)
@@ -710,6 +710,7 @@ def ingredient_handler(request, action):
         return redirect(reverse('recipes:edit_recipe', kwargs={'rec_pk': recipe_pk}))
     
     return redirect(reverse('recipes:create', kwargs={'ingr_check': 'not_new'}))
+    '''
 
 
 # viewing a recipe
