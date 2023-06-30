@@ -21,7 +21,7 @@ def index(request):
 
     # check if a category is empty, and if it is, delete it
     for rec in recipes:
-        if not rec.title:
+        if not rec.title or not rec.category or not rec.body:
             rec.delete()
     if categories:
         for cat in categories:
