@@ -7,7 +7,7 @@ from django.contrib.auth import login, logout, authenticate
 
 from recipe_scrapers import scrape_me
 
-from .forms import RecipeForm, IngredientForm, ScraperForm
+from .forms import RecipeForm, ScraperForm
 from .models import Recipe, Category
 from .utils import *
 
@@ -20,6 +20,9 @@ def index(request):
     categories = Category.objects.filter(user__pk=user_pk)
 
     # check if a category is empty, and if it is, delete it
+    for rec in recipes:
+        if not rec.title:
+            rec.delete()
     if categories:
         for cat in categories:
             empty_cat = True
@@ -49,7 +52,7 @@ def create(request, ingr_check):
         INGREDIENT_LS.clear()
 
     # set up initial forms, etc.
-    ingr_form = IngredientForm()
+
     rec_form = RecipeForm(user=request.user, initial={'servings': 1})
     recipes = Recipe.objects.filter(user__pk=user_pk)
     categories = Category.objects.filter(user__pk=user_pk)
@@ -74,11 +77,11 @@ def create(request, ingr_check):
                             'servings': request.POST.get('servings'),}
                     
                     rec_form = RecipeForm(initial=data)
-                    ingr_form = IngredientForm()
+
 
                     return render(request, 'recipes/create.html', {
                         'rec_form': rec_form,
-                        'ingr_form': ingr_form,
+
                         'ingr_list': INGREDIENT_LS,
                         'categories': categories,
                         'recipes': recipes,
@@ -93,7 +96,7 @@ def create(request, ingr_check):
 
             # create recipe with existing category
             else:
-                recipe = create_recipe_existing_cat(user_pk, request, INGREDIENT_LS, categories)
+                recipe = create_recipe_existing_cat(user_pk, request, INGREDIENT_LS)
                 recipe.save()
                 INGREDIENT_LS.clear()
 
@@ -108,11 +111,11 @@ def create(request, ingr_check):
                     'servings': request.POST.get('servings'),}
             
             rec_form = RecipeForm(initial=data)
-            ingr_form = IngredientForm()
+
 
             return render(request, 'recipes/create.html', {
             'rec_form': rec_form,
-            'ingr_form': ingr_form,
+
             'ingr_list': INGREDIENT_LS,
             'categories': categories,
             'recipes': recipes,
@@ -120,7 +123,7 @@ def create(request, ingr_check):
 
     return render(request, 'recipes/create.html', {
         'rec_form': rec_form,
-        'ingr_form': ingr_form,
+
         'ingr_list': INGREDIENT_LS,
         'categories': categories,
         'recipes': recipes,
@@ -150,7 +153,7 @@ def edit_recipe(request, rec_pk):
     
     # set up forms etc.
     rec_form = RecipeForm(initial=data, user=request.user)
-    ingr_form = IngredientForm()
+
     recipes = Recipe.objects.filter(user__pk=user_pk)
     categories = Category.objects.filter(user__pk=user_pk)
 
@@ -172,14 +175,14 @@ def edit_recipe(request, rec_pk):
                         'servings': request.POST.get('servings')}
                 
                 rec_form = RecipeForm(initial=data)
-                ingr_form = IngredientForm()
+
 
                 return render(request, 'recipes/edit.html', {
                     'categories': categories,
                     'recipes': recipes,
                     'rec_form': rec_form,
                     'ingr_list': INGREDIENT_LS,
-                    'ingr_form': ingr_form,
+
                     'recipe': recipe,
                 })
             
@@ -204,7 +207,7 @@ def edit_recipe(request, rec_pk):
         'recipes': recipes,
         'rec_form': rec_form,
         'ingr_list': INGREDIENT_LS,
-        'ingr_form': ingr_form,
+
         'recipe': recipe,
     })
 
@@ -260,8 +263,425 @@ def get_recipe(request):
 # manipulate INGREDIENT_LS
 # the action argument lets the function know what action is to be taken
 def ingredient_handler(request, action):
-    if request.method == 'POST':
-        form = IngredientForm(request.POST)
+    user_pk = request.user.pk
+    recipes = Recipe.objects.filter(user__pk=user_pk)
+    categories = Category.objects.filter(user__pk=user_pk)
+    if action[-1].isnumeric():
+        recipe_pk = action.split(',')[-1]
+    #if recipe_pk:
+        recipe = Recipe.objects.get(pk=recipe_pk)
+        ingredient_list = recipe.ingredients.split('#')
+        ingredient = request.POST.get('ingredient')
+        if ingredient:
+            if 'add' in action:
+                ingredient_list.append(ingredient)
+                new_category = request.POST.get('new_category')            
+                if new_category:
+
+                    # check if new category alredy exists
+                    category_names = [cat.name for cat in categories]
+                    if new_category in category_names:
+                        messages.info(request, 'Category Already Exists')
+
+                        data = {'category': request.POST.get('category'),
+                                'title': request.POST.get('title'),
+                                'body': request.POST.get('body'),
+                                'servings': request.POST.get('servings'),}
+                        
+                        rec_form = RecipeForm(initial=data)
+
+
+                        return render(request, 'recipes/create.html', {
+                            'rec_form': rec_form,
+                            'ingr_list': ingredient_list,
+                            'categories': categories,
+                            'recipes': recipes,
+                        })
+                    recipe = edit_recipe_new_cat(request, ingredient_list, recipe)
+                    recipe.save()
+
+                    data = {'category': request.POST.get('new_category'),
+                            'title': request.POST.get('title'),
+                            'body': request.POST.get('body'),
+                            'servings': request.POST.get('servings')}
+                    rec_form = RecipeForm(initial=data)
+                    return render(request, 'recipes/create.html', {
+                        'rec_form': rec_form,
+                        'recipe': recipe,
+                        'ingr_list': ingredient_list,
+                        'categories': categories,
+                        'recipes': recipes,
+                    })
+                else:
+                    if request.POST.get('category'):
+                        recipe = edit_recipe_existing_cat(request, ingredient_list, recipe)
+                        recipe.save()
+
+                        data = {'category': request.POST.get('category'),
+                                'title': request.POST.get('title'),
+                                'body': request.POST.get('body'),
+                                'servings': request.POST.get('servings')}
+                        rec_form = RecipeForm(initial=data)
+                        return render(request, 'recipes/create.html', {
+                            'rec_form': rec_form,
+                            'recipe': recipe,
+                            'ingr_list': ingredient_list,
+                            'categories': categories,
+                            'recipes': recipes,
+                        })
+                    else:
+                        recipe.title = request.POST.get('title')
+                        recipe.body = request.POST.get('body')
+                        recipe.servings = request.POST.get('servings')
+                        ingr_string = '#'.join(ingr for ingr in ingredient_list)
+                        recipe.ingredients = ingr_string
+                        recipe.save()
+                        data = {
+                                'title': recipe.title,
+                                'body': recipe.body,
+                                'servings': recipe.servings}
+                        rec_form = RecipeForm(initial=data)
+                        return render(request, 'recipes/create.html', {
+                            'rec_form': rec_form,
+                            'recipe': recipe,
+                            'ingr_list': ingredient_list,
+                            'categories': categories,
+                            'recipes': recipes,
+                        })
+            
+            if 'header' in action:
+                ingredient_list.append(f'!{ingredient.capitalize()}')
+
+                new_category = request.POST.get('new_category')            
+                if new_category:
+
+                    # check if new category alredy exists
+                    category_names = [cat.name for cat in categories]
+                    if new_category in category_names:
+                        messages.info(request, 'Category Already Exists')
+
+                        data = {'category': request.POST.get('category'),
+                                'title': request.POST.get('title'),
+                                'body': request.POST.get('body'),
+                                'servings': request.POST.get('servings'),}
+                        
+                        rec_form = RecipeForm(initial=data)
+
+
+                        return render(request, 'recipes/create.html', {
+                            'rec_form': rec_form,
+                            'ingr_list': ingredient_list,
+                            'categories': categories,
+                            'recipes': recipes,
+                        })
+                    recipe = edit_recipe_new_cat(request, ingredient_list, recipe)
+                    recipe.save()
+
+                    data = {'category': request.POST.get('new_category'),
+                            'title': request.POST.get('title'),
+                            'body': request.POST.get('body'),
+                            'servings': request.POST.get('servings')}
+                    rec_form = RecipeForm(initial=data)
+                    return render(request, 'recipes/create.html', {
+                        'rec_form': rec_form,
+                        'recipe': recipe,
+                        'ingr_list': ingredient_list,
+                        'categories': categories,
+                        'recipes': recipes,
+                    })
+                else:
+                    recipe = edit_recipe_existing_cat(request, ingredient_list, recipe)
+                    recipe.save()
+
+                    data = {'category': request.POST.get('category'),
+                            'title': request.POST.get('title'),
+                            'body': request.POST.get('body'),
+                            'servings': request.POST.get('servings')}
+                    rec_form = RecipeForm(initial=data)
+                    return render(request, 'recipes/create.html', {
+                        'rec_form': rec_form,
+                        'recipe': recipe,
+                        'ingr_list': ingredient_list,
+                        'categories': categories,
+                        'recipes': recipes,
+                    })
+            if 'del' in action:
+                if ingredient_list:
+                    del ingredient_list[-1]
+
+                new_category = request.POST.get('new_category')            
+                if new_category:
+
+                    # check if new category alredy exists
+                    category_names = [cat.name for cat in categories]
+                    if new_category in category_names:
+                        messages.info(request, 'Category Already Exists')
+
+                        data = {'category': request.POST.get('category'),
+                                'title': request.POST.get('title'),
+                                'body': request.POST.get('body'),
+                                'servings': request.POST.get('servings'),}
+                        
+                        rec_form = RecipeForm(initial=data)
+
+
+                        return render(request, 'recipes/create.html', {
+                            'rec_form': rec_form,
+                            'ingr_list': ingredient_list,
+                            'categories': categories,
+                            'recipes': recipes,
+                        })
+                    recipe = edit_recipe_new_cat(request, ingredient_list, recipe)
+                    recipe.save()
+
+                    data = {'category': request.POST.get('new_category'),
+                            'title': request.POST.get('title'),
+                            'body': request.POST.get('body'),
+                            'servings': request.POST.get('servings')}
+                    rec_form = RecipeForm(initial=data)
+                    return render(request, 'recipes/create.html', {
+                        'rec_form': rec_form,
+                        'recipe': recipe,
+                        'ingr_list': ingredient_list,
+                        'categories': categories,
+                        'recipes': recipes,
+                    })
+                else:
+                    recipe = edit_recipe_existing_cat(request, ingredient_list, recipe)
+                    recipe.save()
+
+                    data = {'category': recipe.category,
+                            'title': recipe.title,
+                            'body': recipe.title,
+                            'servings': recipe.servings}
+                    rec_form = RecipeForm(initial=data)
+                    return render(request, 'recipes/create.html', {
+                        'rec_form': rec_form,
+                        'recipe': recipe,
+                        'ingr_list': ingredient_list,
+                        'categories': categories,
+                        'recipes': recipes,        
+                    })
+        else:
+            data = {'category': recipe.category,
+                            'title': recipe.title,
+                            'body': recipe.title,
+                            'servings': recipe.servings}
+            rec_form = RecipeForm(initial=data)
+            return render(request, 'recipes/create.html', {
+                        'rec_form': rec_form,
+                        'recipe': recipe,
+                        'ingr_list': ingredient_list,
+                        'categories': categories,
+                        'recipes': recipes,        
+                    })        
+    else:
+        ingredient = request.POST.get('ingredient')
+        if ingredient:
+            ingredient_list = []
+            if 'add' in action:                
+                ingredient_list.append(ingredient)
+                new_category = request.POST.get('new_category')            
+                if new_category:
+
+                    # check if new category alredy exists
+                    category_names = [cat.name for cat in categories]
+                    if new_category in category_names:
+                        messages.info(request, 'Category Already Exists')
+
+                        data = {'category': request.POST.get('category'),
+                                'title': request.POST.get('title'),
+                                'body': request.POST.get('body'),
+                                'servings': request.POST.get('servings'),}
+                        
+                        rec_form = RecipeForm(initial=data)
+
+
+                        return render(request, 'recipes/create.html', {
+                            'rec_form': rec_form,
+                            'ingr_list': ingredient_list,
+                            'categories': categories,
+                            'recipes': recipes,
+                        })
+                    recipe = create_recipe_new_cat(user_pk, request, ingredient_list)
+                    recipe.save()
+
+                    data = {'category': request.POST.get('new_category'),
+                            'title': request.POST.get('title'),
+                            'body': request.POST.get('body'),
+                            'servings': request.POST.get('servings')}
+                    rec_form = RecipeForm(initial=data)
+                    return render(request, 'recipes/create.html', {
+                        'rec_form': rec_form,
+                        'recipe': recipe,
+                        'ingr_list': ingredient_list,
+                        'categories': categories,
+                        'recipes': recipes,
+                    })
+                else:
+                    if request.POST.get('category'):
+                        recipe = create_recipe_existing_cat(user_pk, request, ingredient_list)
+                        recipe.save()
+
+                        data = {'category': request.POST.get('category'),
+                                'title': request.POST.get('title'),
+                                'body': request.POST.get('body'),
+                                'servings': request.POST.get('servings')}
+                        rec_form = RecipeForm(initial=data)
+                        return render(request, 'recipes/create.html', {
+                            'rec_form': rec_form,
+                            'recipe': recipe,
+                            'ingr_list': ingredient_list,
+                            'categories': categories,
+                            'recipes': recipes,
+                        })
+                    else:
+                        ingr_string = '#'.join(ingr for ingr in ingredient_list)
+                        user = User.objects.get(pk=user_pk)
+                        title = request.POST.get('title')
+                        body = request.POST.get('body')
+                        servings = request.POST.get('servings')
+                        recipe = Recipe(user=user, title=title, body=body, servings=servings,ingredients=ingr_string )
+                        recipe.save()
+                        data = {
+                                'title': title,
+                                'body': body,
+                                'servings': servings}
+                        rec_form = RecipeForm(initial=data)
+                        return render(request, 'recipes/create.html', {
+                            'rec_form': rec_form,
+                            'recipe': recipe,
+                            'ingr_list': ingredient_list,
+                            'categories': categories,
+                            'recipes': recipes,
+                        })
+            
+            if 'header' in action:
+                ingredient_list.append(f'!{ingredient.capitalize()}')
+
+                new_category = request.POST.get('new_category')            
+                if new_category:
+
+                    # check if new category alredy exists
+                    category_names = [cat.name for cat in categories]
+                    if new_category in category_names:
+                        messages.info(request, 'Category Already Exists')
+
+                        data = {'category': request.POST.get('category'),
+                                'title': request.POST.get('title'),
+                                'body': request.POST.get('body'),
+                                'servings': request.POST.get('servings'),}
+                        
+                        rec_form = RecipeForm(initial=data)
+
+
+                        return render(request, 'recipes/create.html', {
+                            'rec_form': rec_form,
+                            'ingr_list': ingredient_list,
+                            'categories': categories,
+                            'recipes': recipes,
+                        })
+                    recipe = create_recipe_new_cat(user_pk, request, ingredient_list)
+                    recipe.save()
+
+                    data = {'category': request.POST.get('new_category'),
+                            'title': request.POST.get('title'),
+                            'body': request.POST.get('body'),
+                            'servings': request.POST.get('servings')}
+                    rec_form = RecipeForm(initial=data)
+                    return render(request, 'recipes/create.html', {
+                        'rec_form': rec_form,
+                        'recipe': recipe,
+                        'ingr_list': ingredient_list,
+                        'categories': categories,
+                        'recipes': recipes,
+                    })
+                else:
+                    recipe = create_recipe_existing_cat(user_pk, request, ingredient_list)
+                    recipe.save()
+
+                    data = {'category': request.POST.get('category'),
+                            'title': request.POST.get('title'),
+                            'body': request.POST.get('body'),
+                            'servings': request.POST.get('servings')}
+                    rec_form = RecipeForm(initial=data)
+                    return render(request, 'recipes/create.html', {
+                        'rec_form': rec_form,
+                        'recipe': recipe,
+                        'ingr_list': ingredient_list,
+                        'categories': categories,
+                        'recipes': recipes,
+                    })
+            if 'del' in action:
+                if ingredient_list:
+                    del ingredient_list[-1]
+
+                new_category = request.POST.get('new_category')            
+                if new_category:
+
+                    # check if new category alredy exists
+                    category_names = [cat.name for cat in categories]
+                    if new_category in category_names:
+                        messages.info(request, 'Category Already Exists')
+
+                        data = {'category': request.POST.get('category'),
+                                'title': request.POST.get('title'),
+                                'body': request.POST.get('body'),
+                                'servings': request.POST.get('servings'),}
+                        
+                        rec_form = RecipeForm(initial=data)
+
+
+                        return render(request, 'recipes/create.html', {
+                            'rec_form': rec_form,
+                            'ingr_list': ingredient_list,
+                            'categories': categories,
+                            'recipes': recipes,
+                        })
+                    recipe = create_recipe_new_cat(user_pk, request, ingredient_list)
+                    recipe.save()
+
+                    data = {'category': request.POST.get('new_category'),
+                            'title': request.POST.get('title'),
+                            'body': request.POST.get('body'),
+                            'servings': request.POST.get('servings')}
+                    rec_form = RecipeForm(initial=data)
+                    return render(request, 'recipes/create.html', {
+                        'rec_form': rec_form,
+                        'recipe': recipe,
+                        'ingr_list': ingredient_list,
+                        'categories': categories,
+                        'recipes': recipes,
+                    })
+                else:
+                    recipe = create_recipe_existing_cat(user_pk, request, ingredient_list)
+                    recipe.save()
+
+                    data = {'category': request.POST.get('category'),
+                            'title': request.POST.get('title'),
+                            'body': request.POST.get('body'),
+                            'servings': request.POST.get('servings')}
+                    rec_form = RecipeForm(initial=data)
+                    return render(request, 'recipes/create.html', {
+                        'rec_form': rec_form,
+                        'recipe': recipe,
+                        'ingr_list': ingredient_list,
+                        'categories': categories,
+                        'recipes': recipes,        
+                    })
+        else:
+            rec_form = RecipeForm(initial=recipe)
+            return render(request, 'recipes/create.html', {
+                        'rec_form': rec_form,
+                        'recipe': recipe,
+                        'ingr_list': ingredient_list,
+                        'categories': categories,
+                        'recipes': recipes,        
+                    })
+
+
+
+
 
         # custom form validation written in forms.py fo ensure no empty string is appended to the list
         if form.is_valid():

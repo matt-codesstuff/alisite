@@ -4,14 +4,6 @@
         <h1>New Recipe</h1>
         <br /><br /><br />
     </div>
-    
-    <!--ingredient form-->
-    <form action="{% url 'recipes:ingredient_handler' action='add' %}" method="POST">
-        {% include "recipes/includes/ingredient_form.html" %}
-    </form>
-
-    <br><br>
-    <hr>
 
     <!--main recipe form-->
     <form action="{% url 'recipes:create' ingr_check='not_new' %}" method="POST">

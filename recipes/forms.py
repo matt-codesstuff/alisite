@@ -4,23 +4,11 @@ from ckeditor.widgets import CKEditorWidget
 from .models import Recipe, Category
 
 
-class IngredientForm(forms.Form):
-
-    # form has just one field
-    ingredient = forms.CharField(widget=forms.TextInput(
-        attrs={'autofocus': True}), required=False)
-    
-    # custom form validation
-    def clean(self):
-        cleaned_data = super().clean()
-        ingredient = cleaned_data.get('ingredient')
-        if not ingredient:
-            raise forms.ValidationError('No ingredient')
-
-
 class RecipeForm(forms.ModelForm):
 
     # custom form fields
+    ingredient = forms.CharField(widget=forms.TextInput(
+        attrs={'autofocus': True}), required=False)
     new_category = forms.CharField(required=False, label="New Category")
     cat_image = forms.URLField(required=False, label="Image", widget=forms.TextInput(
         attrs={'placeholder': 'paste link here'}))

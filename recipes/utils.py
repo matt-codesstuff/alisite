@@ -41,7 +41,7 @@ def create_recipe_new_cat(user_pk, request, ingr_ls):
 
     return recipe
 
-def create_recipe_existing_cat(user_pk, request, ingr_ls, categories):
+def create_recipe_existing_cat(user_pk, request, ingr_ls):
 
     # create recipe and return to view to be saved
     user = User.objects.get(pk=user_pk)
