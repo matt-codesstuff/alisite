@@ -21,8 +21,8 @@ class Recipe(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     category = models.ForeignKey(
         Category, on_delete=models.CASCADE, blank=True, null=True)
-    title = models.CharField(max_length=50)
-    body = models.TextField()
+    title = models.CharField(max_length=50, blank=True, null=True)
+    body = models.TextField(blank=True, null=True)
     ingredients = models.CharField(max_length=1000, blank=True, null=True)
     servings = models.IntegerField(blank=True, null=True)
     site = models.CharField(max_length=200, blank=True, null=True)
