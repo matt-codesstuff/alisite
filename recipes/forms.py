@@ -36,9 +36,13 @@ class RecipeForm(forms.ModelForm):
         cleaned_data = super().clean()
         category = cleaned_data.get('category')
         new_category = cleaned_data.get('new_category')
+        title = cleaned_data.get('title')
         if not category and not new_category:
             raise forms.ValidationError(
                 "No category")
+        if not title:
+            raise forms.ValidationError(
+                "No title")
   
 
 class ScraperForm(forms.Form):
@@ -59,3 +63,12 @@ class ScraperForm(forms.Form):
         if user:
             category = self.fields['category']
             category.queryset = Category.objects.filter(user__pk=user.pk)
+
+    # custom form validation
+    def clean(self):
+        cleaned_data = super().clean()
+        category = cleaned_data.get('category')
+        new_category = cleaned_data.get('new_category')
+        if not category and not new_category:
+            raise forms.ValidationError(
+                "No category")        

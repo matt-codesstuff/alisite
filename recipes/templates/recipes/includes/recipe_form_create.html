@@ -1,16 +1,16 @@
-{% csrf_token %}
 <div class="center">
     <div style="border: 1px solid #a9aaaa; border-radius:  15px; padding: 33px; background-color: #383e3e">
         <div class="cat-flex">
         <!--csrf_token and ingredient form-->
+            {% csrf_token %}
             {{rec_form.ingredient.label}} 
             {{rec_form.ingredient}}
         </div>
         <div class="button-flex">
         <!--form buttons-->
-            <button id="button" formaction="/ingredient_handler/add,{{recipe.pk}}">Ingredient</button>
-            <button id="button" formaction="/ingredient_handler/header,{{recipe.pk}}">Header</button>
-            <button id="button" formaction="/ingredient_handler/del,{{recipe.pk}}">Delete</button>
+            <button id="button" formaction="/create/add,{{recipe.pk}}">Ingredient</button>
+            <button id="button" formaction="/create/header,{{recipe.pk}}">Header</button>
+            <button id="button" formaction="/create/del,{{recipe.pk}}">Delete</button>
         </div>        
         <div class="row-container">
             <div class="ingredient-list">
@@ -20,12 +20,14 @@
                 {% if ingr_list %}
                     <ul>
                     {% for i in ingr_list %}
-                        {% if i.0 == '!' %}
-                            <br>
-                            <strong>{{i| slice:'1:'}}</strong>
-                        {% else %}
-                            <li>{{i}}</li>
-                        {% endif %}
+                        {% if i %}
+                            {% if i.0 == '!' %}
+                                <br>
+                                <strong>{{i| slice:'1:'}}</strong>
+                            {% else %}
+                                <li>{{i}}</li>
+                            {% endif %}
+                        {% endif %}    
                     {% endfor %}
                     </ul>
                 {% endif %}        
@@ -80,16 +82,9 @@
 <div class="center">
     <div class="column-container">
         {{rec_form.media}}
-        {{rec_form.body}}
+        {{rec_form.body| safe}}
         <br><br>
-        {% if recipe.pk %}
-            <div class="row-container">
-                <input id="button" type="submit" value="Save">
-                <button id="button" formaction="{% url 'recipes:delete_recipe' rec_pk=recipe.pk %}">Delete</button>
-            </div>
-        {% else %}    
-            <input id="button" type="submit" value="create">
-        {% endif %}    
+        <input id="button" type="submit" value="create">  
     </div>    
 </div>
 <br>

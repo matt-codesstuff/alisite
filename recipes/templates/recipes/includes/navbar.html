@@ -26,7 +26,7 @@
                 </li>
               {% endfor %}          
               <li>
-                <a style="color: whitesmoke;" class="nav-link" href="{% url 'recipes:create' ingr_check='new' %}">New</a>
+                <a style="color: whitesmoke;" class="nav-link" href="{% url 'recipes:create' action='new' %}">New</a>
               </li>
               <li>
                 <a style="color: whitesmoke;" class="nav-link" href="{% url 'recipes:get_recipe' %}">From The Internet</a>

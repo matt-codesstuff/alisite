@@ -5,7 +5,7 @@
             <div class="row" style="display: flex; justify-content: center;">
                 {% if categories %}
                     {% for cat in categories %}        
-                        <div class="card" style="width: 18rem; margin: 15px; background-color: #383e3e; border: 1px solid #a9aaaa; padding: 15px; color: whitesmoke">
+                        <div class="card" style="text-align: center; width: 18rem; margin: 15px; background-color: #383e3e; border: 1px solid #a9aaaa; padding: 15px; color: whitesmoke">
 
                                 <img class="card-img-top" src="{{ cat.image }}" alt="No Image" width='250' height='300'>
 
@@ -13,14 +13,14 @@
                                 <h5 class="card-title">{{ cat.name| title }}</h5>
                                 <p class="card-text">{{cat.description}}</p>
                             </div>
-                            <div class="dropdown">
+                            <div class="dropdown" style="display: flex; justify-content: center;">
                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Recipes
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     {% for rec in recipes|dictsort:"title" %}
                                         {% if rec.category == cat %}
-                                            <a class="dropdown-item" href="{% url 'recipes:view_recipe' rec_pk=rec.pk %}">{{rec}}</a>
+                                            <a class="dropdown-item" href="{% url 'recipes:view_recipe' rec_pk=rec.pk %}" >{{rec}}</a>
                                         {% endif %}
                                     {% endfor %}
                                 

@@ -17,13 +17,15 @@
       <hr>
       <div>
         <ul>
-          {% for i in ingr_list %} 
-            {% if i.0 == '!' %}
-              <br>
-              <strong>{{i| slice:'1:'}}</strong>
-            {% else %}
-              <li>{{i}}</li>
-            {% endif %} 
+          {% for i in ingr_list %}
+            {% if i %} 
+              {% if i.0 == '!' %}
+                <br>
+                <strong>{{i| slice:'1:'}}</strong>
+              {% else %}
+                <li>{{i}}</li>
+              {% endif %}
+            {% endif %}   
           {% endfor %}
         </ul>
       </div>
@@ -41,7 +43,7 @@
   <br><br><br>
   <div class="center">
     <div class="edit-button">
-      <a href="{% url 'recipes:edit_recipe' rec_pk=recipe.pk %}">
+      <a href="{% url 'recipes:edit_recipe' action=recipe.pk %}">
         <button id="button">Edit</button>
       </a>
     </div>
