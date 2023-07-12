@@ -11,6 +11,7 @@ from .forms import RecipeForm, ScraperForm
 from .models import Recipe, Category
 from .utils import *
 
+UUID_LEN = 36
 
 # homepage
 def index(request):
@@ -18,7 +19,7 @@ def index(request):
     recipes = Recipe.objects.filter(user__pk=user_pk)
     categories = Category.objects.filter(user__pk=user_pk)
 
-    # some cleanup to find incomplete recepes of empty categories and deleting them
+    # some cleanup to find incomplete recepes or empty categories and delete them
     if recipes:
         for rec in recipes:
             if not rec.title or not rec.category or not rec.body:
@@ -47,7 +48,6 @@ def index(request):
 def create(request, action):
 
     # handle for ingredients
-    #if action not in ['new', 'save']:
     if 'new' not in action and 'save' not in action:  
         recipe = ingredient_handler(request, action)
         if isinstance(recipe, HttpResponse):
@@ -102,11 +102,11 @@ def create(request, action):
 
                     return redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))    
 
-        # error message for if no category is given
+            # error message for incomplete recipe
             else:
-                messages.info(request, 'Note: You must give a title, category and body to save the recipe')
+                messages.info(request, 'Note: You must provide a title, category and body to save the recipe')
 
-                if action[-1].isnumeric():
+                if len(action) > UUID_LEN:
                     recipe_pk = action.split(',')[-1]
                     recipe = Recipe.objects.get(pk=recipe_pk)
                     ingredient_list = recipe.ingredients.split('#') 
@@ -149,8 +149,8 @@ def edit_recipe(request, action):
     categories = Category.objects.filter(user__pk=user_pk)
     
     # if the action is purely numeric, only the recipe.pk was given, meaning this is the first time this view is used
-    if action.isnumeric():
-        #return HttpResponse('hello')
+    if len(action) == UUID_LEN:
+
         # retrieve recipe to be edited
         recipe = Recipe.objects.get(pk=action)
 
@@ -170,7 +170,7 @@ def edit_recipe(request, action):
         rec_form = RecipeForm(initial=data, user=request.user)
 
     # handle for ingredients
-    elif  'save' not in action:
+    if  'add' in action or 'header' in action or 'del' in action:
         recipe = ingredient_handler(request, action)
         if isinstance(recipe, HttpResponse):
             return recipe
@@ -178,8 +178,7 @@ def edit_recipe(request, action):
             ingredient_list = recipe.ingredients.split('#')
             data = collect_data(request)
             rec_form = RecipeForm(user=request.user, initial=data)
-
-    # handle for form submission    
+   
     # handle for RecipeForm submission
     if 'save' in action:
         if request.method == 'POST':
@@ -231,7 +230,7 @@ def edit_recipe(request, action):
                 data = collect_data(request)               
                 rec_form = RecipeForm(user=request.user, initial=data)
 
-                return render(request, 'recipes/create.html', {
+                return render(request, 'recipes/edit.html', {
                 'rec_form': rec_form,
                 'recipe': recipe,
                 'ingr_list': ingredient_list,
@@ -299,18 +298,35 @@ def get_recipe(request):
     })
   
 # viewing a recipe
-def view_recipe(request, rec_pk):
-    
+def view_recipe(request, rec_pk):    
     user_pk = request.user.pk
     recipes = Recipe.objects.filter(user__pk=user_pk)
     categories = Category.objects.filter(user__pk=user_pk)
     recipe = Recipe.objects.get(pk=rec_pk)
-   
     if recipe.ingredients:
         ingr_list = recipe.ingredients.split('#')
     else:
         ingr_list = []    
-    #return HttpResponse(recipe.ingredients)
+
+    # some cleanup to find incomplete recepes or empty categories and deleting them
+    if recipes:
+        for rec in recipes:
+            if not rec.title or not rec.category or not rec.body:
+                rec.delete()
+                recipes = Recipe.objects.filter(user__pk=user_pk)
+    if categories:
+        for cat in categories:
+            empty_cat = True
+            for rec in recipes:
+                if rec.category.pk == cat.pk:
+                    empty_cat = False
+            if empty_cat:
+                cat_del = Category.objects.get(pk=cat.pk)
+                cat_del.delete()
+
+            # update list of categories to reflect deleted ones    
+            categories = Category.objects.filter(user__pk=user_pk)   
+
     return render(request, 'recipes/view_recipe.html', {
         'recipe': recipe,
         'ingr_list': ingr_list,

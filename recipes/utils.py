@@ -6,6 +6,8 @@ from django.contrib import messages
 from .models import Category, Recipe
 from .forms import RecipeForm
 
+UUID_LEN = 36
+
 def get_new_cat(request):
 
     # get fields ready
@@ -204,8 +206,9 @@ def ingredient_handler(request, action):
     categories = Category.objects.filter(user__pk=user_pk)
 
     # if recipe pk has been given it means we need to edit current recipe as apposed to creating a new one
-    if action[-1].isnumeric():
+    if len(action) > UUID_LEN:
         recipe_pk = action.split(',')[-1]
+        action = action.split(',')[0]
         recipe = Recipe.objects.get(pk=recipe_pk)
         ingredient_list = recipe.ingredients.split('#')
         ingredient = request.POST.get('ingredient')

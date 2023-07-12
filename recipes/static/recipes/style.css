@@ -75,7 +75,7 @@ h6 {
 .ingredient-list {
   background-color: rgb(243, 242, 242);
   color:#2C3333;
-  width: 350px;
+  width: 300px;
   min-height: 500px;
   padding: 10px;
   margin-bottom: 50px;
@@ -137,7 +137,7 @@ h6 {
 
 
 #button {
-  width: 115px;
+  width: 100px;
   border-radius: 8px;
   margin: 3px;
   background-color: rgb(185, 186, 187);

@@ -36,47 +36,50 @@
         </div>
     </div>
 </div>
-
-<div class="seperate" style="padding: 25px; display: flex; flex-wrap: wrap;" >
-    <div >
-        <div class="column-container" >
-            <div class="cat-flex">
-                {{rec_form.category.label}}
-                {{rec_form.category}}
-            </div>
-            <div class="cat-flex">                
-                {{rec_form.title.label}}
-                {{rec_form.title}}
-            </div>
-            <div class="cat-flex" style="width: 75px">               
-                {{rec_form.servings.label}}
-                {{rec_form.servings}}
-            </div>
-            <br><br>
-        </div>
-    </div>
-    <div style="width: 50%">
-        <div style="border: 1px solid #a9aaaa; border-radius:  15px; background-color: #383e3e; width: 460px; margin-left: -30px; padding: 10px;">
-            <div class="row-container">
-                <div class="cat-flex" >
-                    {{rec_form.new_category.label}}
-                    {{rec_form.new_category.errors}}{{rec_form.new_category}}
+<br><br> 
+<div class="container" >
+    <div class="row">
+        <div class="col">
+            <div class="column-container" >
+                <div class="cat-flex">
+                    {{rec_form.category.label}}
+                    {{rec_form.category}}
                 </div>
-                <div class="cat-flex" >
-                    {{rec_form.cat_image.label}}
-                    {{rec_form.cat_image}}
+                <div class="cat-flex">                
+                    {{rec_form.title.label}}
+                    {{rec_form.title}}
+                </div>
+                <div class="cat-flex" style="width: 75px">               
+                    {{rec_form.servings.label}}
+                    {{rec_form.servings}}
+                </div>
+                <br><br>
+            </div>
+        </div>
+        <div class="col">
+            <div style="border: 1px solid #a9aaaa; border-radius:  15px; background-color: #383e3e; width: 410px; padding: 10px;">
+                <div class="row-container">
+                    <div class="cat-flex" style="width: 180px" >
+                        {{rec_form.new_category.label}}
+                        {{rec_form.new_category.errors}}{{rec_form.new_category}}
+                    </div>
+                    <div class="cat-flex" style="width: 180px" >
+                        {{rec_form.cat_image.label}}
+                        {{rec_form.cat_image}}
+                        <p style="color:#ccc"><small>(optional)</small></p>
+                    </div>
+                </div>
+                <p style="margin-top: -25px">
+                <div class="cat-flex" style=" width: 375px;">
+                    {{rec_form.cat_description.label}}
+                    {{rec_form.cat_description}}
                     <p style="color:#ccc"><small>(optional)</small></p>
                 </div>
+                </p>
             </div>
-            <p style="margin-top: -25px">
-            <div class="cat-flex" style=" width: 375px;">
-                {{rec_form.cat_description.label}}
-                {{rec_form.cat_description}}
-                <p style="color:#ccc"><small>(optional)</small></p>
-            </div>
-            </p>
-        </div>
-    </div>    
+        </div> 
+    </div>
+   
 </div>
 <br><br>            
 <div class="center">
