@@ -1,5 +1,5 @@
 <div class="center">
-    <div style="border: 1px solid #a9aaaa; border-radius:  15px; padding: 33px; background-color: #383e3e">
+    <div style="border: 1px solid #a9aaaa; border-radius:  15px; padding: 25px; background-color: #383e3e">
         <div class="cat-flex">
         <!--csrf_token and ingredient form-->
             {% csrf_token %}
@@ -57,20 +57,20 @@
             </div>
         </div>
         <div class="col">
-            <div style="border: 1px solid #a9aaaa; border-radius:  15px; background-color: #383e3e; width: 370px; padding: 10px;">
+            <div style="margin-left: -15px; border: 1px solid #a9aaaa; border-radius:  15px; background-color: #383e3e; width: 355px; padding: 5px;">
                 <div class="row-container">
-                    <div class="cat-flex" style="width: 170px" >
+                    <div class="cat-flex" style="width: 165px" >
                         {{rec_form.new_category.label}}
                         {{rec_form.new_category.errors}}{{rec_form.new_category}}
                     </div>
-                    <div class="cat-flex" style="width: 170px" >
+                    <div class="cat-flex" style="width: 165px" >
                         {{rec_form.cat_image.label}}
                         {{rec_form.cat_image}}
                         <p style="color:#ccc"><small>(optional)</small></p>
                     </div>
                 </div>
 
-                <div class="cat-flex" style=" width: 350px;">
+                <div class="cat-flex" style=" width: 340px;">
                     {{rec_form.cat_description.label}}
                     {{rec_form.cat_description}}
                     <p style="color:#ccc"><small>(optional)</small></p>
