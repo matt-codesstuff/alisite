@@ -3,36 +3,9 @@
         <div class="cat-flex">
         <!--csrf_token and ingredient form-->
             {% csrf_token %}
-            {{rec_form.ingredient.label}} 
-            {{rec_form.ingredient}}
-        </div>
-        <div class="button-flex">
-        <!--form buttons-->
-            <button id="button" formaction="/edit_recipe/add,{{recipe.pk}}">Ingredient</button>
-            <button id="button" formaction="/edit_recipe/header,{{recipe.pk}}">Header</button>
-            <button id="button" formaction="/edit_recipe/del,{{recipe.pk}}">Delete</button>
-        </div>        
-        <div class="row-container">
-            <div class="ingredient-list">
-            <!--list ingredients-->
-            <!--if '!' is appended to start, the ingredient is a heading and is printed in bold-->
-            <!--the '!' gets sliced off the end-->
-                {% if ingr_list %}
-                    <ul>
-                    {% for i in ingr_list %}
-                        {% if i %}
-                            {% if i.0 == '!' %}
-                                <br>
-                                <strong>{{i| slice:'1:'}}</strong>
-                            {% else %}
-                                <li>{{i}}</li>
-                            {% endif %}
-                        {% endif %}    
-                    {% endfor %}
-                    </ul>
-                {% endif %}        
-
-            </div>
+            {{rec_form.ingredients.label}}
+            <br> <br>
+            {{rec_form.ingredients}}
         </div>
     </div>
 </div>
@@ -58,8 +31,7 @@
         </div>
 
         <div class="col">
-            <div style="border: 1px solid #a9aaaa; border-radius:  15px; background-color: #383e3e; width: 345px; padding: 5px;">
-                <div class="row-container">
+            <div style="border: 1px solid #a9aaaa; border-radius:  15px; background-color: #383e3e; width: 263px; padding: 5px;">                
                     <div class="cat-flex" style="width: 160px" >
                         {{rec_form.new_category.label}}
                         {{rec_form.new_category.errors}}{{rec_form.new_category}}
@@ -68,17 +40,15 @@
                         {{rec_form.cat_image.label}}
                         {{rec_form.cat_image}}
                         <p style="color:#ccc"><small>(optional)</small></p>
-                    </div>
-                </div>
-
-                <div class="cat-flex" style=" width: 330px;">
+                    </div>             
+                <div class="cat-flex" style=" width: 250px;">
                     {{rec_form.cat_description.label}}
                     {{rec_form.cat_description}}
                     <p style="color:#ccc"><small>(optional)</small></p>
                 </div>
                 </p>
             </div>
-        </div> 
+        </div>  
     </div>
    
 </div>

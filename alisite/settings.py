@@ -62,6 +62,16 @@ CKEDITOR_CONFIGS = {
         'height': '740',
         'extraPlugins': 'justify,liststyle,indent',       
    },
+   'ingredients':{
+        'toolbar': 'Custom',
+        'toolbar_Custom':[ 
+            ['Bold'],
+            ['BulletedList'],
+            ['Source'],
+        ],
+        'width': '217px',
+        'height': '500px'
+    },
 }
 
 MIDDLEWARE = [  

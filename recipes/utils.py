@@ -23,18 +23,24 @@ def get_new_cat(request):
                  description=description)
     return category
 
-def create_recipe_new_cat(user_pk, request, ingr_ls):
+def create_recipe_new_cat(user_pk, request):
 
     # create and save new category
     new_cat = get_new_cat(request)   
     new_cat.save()
 
+    # this bit of code is because no error handling was implemented for when no servings were given
+    # not going to fuck around with error handling now. this fixes it
+    if not request.POST.get('servings'):
+        servings = 1
+    else:    
+        servings = request.POST.get('servings')
+
     # get fields ready
     user = User.objects.get(pk=user_pk)
     title = request.POST.get('title')
     body = request.POST.get('body')
-    servings = request.POST.get('servings')
-    ingr_string = '#'.join(ingr for ingr in ingr_ls)
+    ingredients = request.POST.get('ingredients')
 
     # create recipe and return to view to be saved
     recipe = Recipe(category=new_cat,
@@ -42,11 +48,18 @@ def create_recipe_new_cat(user_pk, request, ingr_ls):
                title=title,
                body = body,
                servings=servings,
-               ingredients=ingr_string)
+               ingredients=ingredients)
 
     return recipe
 
-def create_recipe_existing_cat(user_pk, request, ingr_ls):
+def create_recipe_existing_cat(user_pk, request):
+
+    # this bit of code is because no error handling was implemented for when no servings were given
+    # not going to fuck around with error handling now. this fixes it
+    if not request.POST.get('servings'):
+        servings = 1
+    else:    
+        servings = request.POST.get('servings')
 
     # create recipe and return to view to be saved
     user = User.objects.get(pk=user_pk)
@@ -54,26 +67,31 @@ def create_recipe_existing_cat(user_pk, request, ingr_ls):
     category = Category.objects.get(pk=category_pk)
     title = request.POST.get('title')
     body = request.POST.get('body')
-    servings = request.POST.get('servings')
-    ingr_string = '#'.join(ingr for ingr in ingr_ls)
+    ingredients = request.POST.get('ingredients')
 
     recipe = Recipe(category=category,
             user=user,
             title=title,
             body = body,
             servings=servings,
-            ingredients=ingr_string)
+            ingredients=ingredients)
 
     return recipe 
 
-def create_recipe_no_cat(user_pk, request, ingr_ls):
+def create_recipe_no_cat(user_pk, request):
+
+    # this bit of code is because no error handling was implemented for when no servings were given
+    # not going to fuck around with error handling now. this fixes it
+    if not request.POST.get('servings'):
+        servings = 1
+    else:    
+        servings = request.POST.get('servings')
 
     # get fields ready
     user = User.objects.get(pk=user_pk)
     title = request.POST.get('title')
     body = request.POST.get('body')
-    servings = request.POST.get('servings')
-    ingr_string = '#'.join(ingr for ingr in ingr_ls)
+    ingredients = request.POST.get('ingredients')
 
     # create recipe and return to view to be saved
     recipe = Recipe(
@@ -81,11 +99,18 @@ def create_recipe_no_cat(user_pk, request, ingr_ls):
                title=title,
                body = body,
                servings=servings,
-               ingredients=ingr_string)
+               ingredients=ingredients)
 
     return recipe
 
-def edit_recipe_new_cat(request, ingr_ls, recipe):
+def edit_recipe_new_cat(request, recipe):
+
+    # this bit of code is because no error handling was implemented for when no servings were given
+    # not going to fuck around with error handling now. this fixes it
+    if not request.POST.get('servings'):
+        servings = 1
+    else:    
+        servings = request.POST.get('servings')
     
     # create and save new category
     new_cat = get_new_cat(request)
@@ -95,13 +120,19 @@ def edit_recipe_new_cat(request, ingr_ls, recipe):
     recipe.category = new_cat
     recipe.title = request.POST.get('title')
     recipe.body = request.POST.get('body')
-    recipe.servings =request.POST.get('sercings')
-    ingr_str = '#'.join(ingr for ingr in ingr_ls)
-    recipe.ingredients = ingr_str
+    recipe.servings = servings
+    recipe.ingredients = request.POST.get('ingredients')
 
     return recipe
 
-def edit_recipe_existing_cat(request, ingr_ls, recipe):
+def edit_recipe_existing_cat(request, recipe):
+
+    # this bit of code is because no error handling was implemented for when no servings were given
+    # not going to fuck around with error handling now. this fixes it
+    if not request.POST.get('servings'):
+        servings = 1
+    else:    
+        servings = request.POST.get('servings')
 
     # edit recipe and return to view to be saved
     category_pk = request.POST.get('category')
@@ -109,19 +140,24 @@ def edit_recipe_existing_cat(request, ingr_ls, recipe):
     recipe.category = category
     recipe.title = request.POST.get('title')
     recipe.body = request.POST.get('body')
-    recipe.servings = request.POST.get('servings')
-    ingr_string = '#'.join(ingr for ingr in ingr_ls)
-    recipe.ingredients = ingr_string
+    recipe.servings = servings
+    recipe.ingredients = request.POST.get('ingredients')
 
     return recipe
 
-def edit_recipe_no_cat(request, ingr_ls, recipe):
+def edit_recipe_no_cat(request, recipe):
+
+    # this bit of code is because no error handling was implemented for when no servings were given
+    # not going to fuck around with error handling now. this fixes it
+    if not request.POST.get('servings'):
+        servings = 1
+    else:    
+        servings = request.POST.get('servings')
 
     recipe.title = request.POST.get('title')
     recipe.body = request.POST.get('body')
-    recipe.servings = request.POST.get('servings')
-    ingr_string = '#'.join(ingr for ingr in ingr_ls)
-    recipe.ingredients = ingr_string
+    recipe.servings = servings
+    recipe.ingredients = request.POST.get('ingredients')
 
     return recipe
 
@@ -149,7 +185,16 @@ def scrape_recipe(user_pk, request, online_recipe, new_cat):
     title = online_recipe.title()
     servings = int(online_recipe.yields()[0])
     site = online_recipe.host()
-    ingr_str = '#'.join(ingr for ingr in online_recipe.ingredients())
+
+    # format list of ingredients to html string
+    ingredients = ''
+    for i, ingr in enumerate(online_recipe.ingredients(), 1):
+        if i == 1:
+            ingredients += f'<ul><li>{ingr}</li>'
+        elif i == len(online_recipe.ingredients()):
+            ingredients += f'<li>{ingr}</li></ul>'
+        else:
+            ingredients += f'<li>{ingr}</li>'        
 
     # format the body
     body_len = len(online_recipe.instructions_list())    
@@ -172,27 +217,30 @@ def scrape_recipe(user_pk, request, online_recipe, new_cat):
                 title =title, 
                 category=category, 
                 body=formatted_body, 
-                ingredients=ingr_str, 
+                ingredients=ingredients, 
                 servings=servings, 
                 site=site)
            
     return recipe
 
-def collect_data(request):
+def collect_data(request):    
     if request.POST.get('category'):
         data = {'category': request.POST.get('category'),
                 'title': request.POST.get('title'),
                 'body': request.POST.get('body'),
-                'servings': request.POST.get('servings'),}
+                'servings': request.POST.get('servings'),
+                'ingredient': request.POST.get('ingredient')}
     elif request.POST.get('new_category'):
         data = {'category': request.POST.get('new_category'),
                 'title': request.POST.get('title'),
                 'body': request.POST.get('body'),
-                'servings': request.POST.get('servings'),} 
+                'servings': request.POST.get('servings'),
+                'ingredient': request.POST.get('ingredient')} 
     else:
         data = {'title': request.POST.get('title'),
                 'body': request.POST.get('body'),
-                'servings': request.POST.get('servings'),}        
+                'servings': request.POST.get('servings'),
+                'ingredient': request.POST.get('ingredient')}       
     
     return data
 

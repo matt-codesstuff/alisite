@@ -47,87 +47,63 @@ def index(request):
 # creating new recipe
 def create(request, action):
 
-    # handle for ingredients
-    if 'new' not in action and 'save' not in action:  
-        recipe = ingredient_handler(request, action)
-        if isinstance(recipe, HttpResponse):
-            return recipe
-        else:
-            ingredient_list = recipe.ingredients.split('#')
-
     user_pk = request.user.pk  
     recipes = Recipe.objects.filter(user__pk=user_pk)
     categories = Category.objects.filter(user__pk=user_pk)   
 
-    # handle for RecipeForm submission
-    if 'save' in action:
-        if request.method == 'POST':
-            form = RecipeForm(request.POST)
-            if form.is_valid():
+    # handle for RecipeForm submission        
+    if request.method == 'POST':      
+        form = RecipeForm(request.POST)           
+        if form.is_valid():
+
+            # check if new category was given
+            new_category = request.POST.get('new_category')            
+            if new_category:
+
+                # check if new category alredy exists
+                category_names = [cat.name for cat in categories]
+                if new_category in category_names:
+                    messages.info(request, 'Category Already Exists')
+
+                    data = collect_data(request)
+                    rec_form = RecipeForm(user=request.user, initial=data)
+
+                    return render(request, 'recipes/create.html', {
+                        'rec_form': rec_form,
+                        'categories': categories,
+                        'recipes': recipes,
+                        'recipe': recipe
+                    })
+
+                # create recipe with new category       
+                recipe = create_recipe_new_cat(user_pk, request)
+                recipe.save()
+
+                return redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))
+            
+            # create recipe with existing category
+            elif request.POST.get('category'):
+                recipe = create_recipe_existing_cat(user_pk, request, ingredient_list)
+                recipe.save()
+
+                return redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))    
+
+        # error message for incomplete recipe
+        else:
+            messages.info(request, 'Note: You must provide a title, category and body to save the recipe')         
                 
-                recipe_pk = action.split(',')[-1]
-                recipe = Recipe.objects.get(pk=recipe_pk)
-                ingredient_list = recipe.ingredients.split('#')
+            data = collect_data(request)               
+            rec_form = RecipeForm(user=request.user, initial=data)
 
-                # check if new category was given
-                new_category = request.POST.get('new_category')            
-                if new_category:
-
-                    # check if new category alredy exists
-                    category_names = [cat.name for cat in categories]
-                    if new_category in category_names:
-                        messages.info(request, 'Category Already Exists')
-
-                        data = collect_data(request)
-                        rec_form = RecipeForm(user=request.user, initial=data)
-
-                        return render(request, 'recipes/create.html', {
-                            'rec_form': rec_form,
-                            'ingr_list': ingredient_list,
-                            'categories': categories,
-                            'recipes': recipes,
-                            'recipe': recipe
-                        })
-
-                    # create recipe with new category       
-                    recipe = create_recipe_new_cat(user_pk, request, ingredient_list)
-                    recipe.save()
-
-                    return redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))
-                
-                # create recipe with existing category
-                elif request.POST.get('category'):
-                    recipe = create_recipe_existing_cat(user_pk, request, ingredient_list)
-                    recipe.save()
-
-                    return redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))    
-
-            # error message for incomplete recipe
-            else:
-                messages.info(request, 'Note: You must provide a title, category and body to save the recipe')
-
-                if len(action) > UUID_LEN:
-                    recipe_pk = action.split(',')[-1]
-                    recipe = Recipe.objects.get(pk=recipe_pk)
-                    ingredient_list = recipe.ingredients.split('#') 
-                else:
-                    recipe = ''
-                    ingredient_list = []          
-                    
-                data = collect_data(request)               
-                rec_form = RecipeForm(user=request.user, initial=data)
-
-                return render(request, 'recipes/create.html', {
-                'rec_form': rec_form,
-                'recipe': recipe,
-                'ingr_list': ingredient_list,
-                'categories': categories,
-                'recipes': recipes,
-            })
+            return render(request, 'recipes/create.html', {
+            'rec_form': rec_form,
+            'recipe': recipe,
+            'categories': categories,
+            'recipes': recipes,
+        })
 
     if action == 'new':
         recipe = ''
-        ingredient_list = []
         rec_form = RecipeForm(user=request.user, initial={'servings': 1}) 
     else:
         data = collect_data(request)
@@ -135,59 +111,25 @@ def create(request, action):
 
     return render(request, 'recipes/create.html', {
         'rec_form': rec_form,
-        'ingr_list': ingredient_list,
         'categories': categories,
         'recipes': recipes,
         'recipe': recipe,
     })
-
 
 # editing a recipe
 def edit_recipe(request, action):
     user_pk = request.user.pk
     recipes = Recipe.objects.filter(user__pk=user_pk)
     categories = Category.objects.filter(user__pk=user_pk)
-    
-    # if the action is purely numeric, only the recipe.pk was given, meaning this is the first time this view is used
-    if len(action) == UUID_LEN:
 
-        # retrieve recipe to be edited
-        recipe = Recipe.objects.get(pk=action)
-
-        # prepare ingredient_list
-        if recipe.ingredients:
-            ingredient_list = recipe.ingredients.split('#')
-        else:
-            ingredient_list = []    
-
-        # gather data to populate form to be edited   
-        data = {'title': recipe.title,
-                'category': recipe.category,
-                'servings': recipe.servings,
-                'body': recipe.body} 
+    if request.method == 'POST':
+        form = RecipeForm(request.POST)
+        if form.is_valid():   
         
-        # set up forms etc.
-        rec_form = RecipeForm(initial=data, user=request.user)
-
-    # handle for ingredients
-    if  'add' in action or 'header' in action or 'del' in action:
-        recipe = ingredient_handler(request, action)
-        if isinstance(recipe, HttpResponse):
-            return recipe
-        else:
-            ingredient_list = recipe.ingredients.split('#')
-            data = collect_data(request)
-            rec_form = RecipeForm(user=request.user, initial=data)
-   
-    # handle for RecipeForm submission
-    if 'save' in action:
-        if request.method == 'POST':
-            form = RecipeForm(request.POST)
-            if form.is_valid():
-                
+            # handle for RecipeForm submission
+            if 'save' in action:
                 recipe_pk = action.split(',')[-1]
                 recipe = Recipe.objects.get(pk=recipe_pk)
-                ingredient_list = recipe.ingredients.split('#')
 
                 # check if new category was given
                 new_category = request.POST.get('new_category')            
@@ -198,52 +140,71 @@ def edit_recipe(request, action):
                     if new_category in category_names:
                         messages.info(request, 'Category Already Exists')
 
-                        data = collect_data(request)
+                        data = {'category': request.POST.get('category'),
+                        'title': request.POST.get('title'),
+                        'body': request.POST.get('body'),
+                        'servings': request.POST.get('servings'),
+                        'ingredients': request.POST.get('ingredients') }
                         rec_form = RecipeForm(user=request.user, initial=data)
 
                         return render(request, 'recipes/edit.html', {
                             'rec_form': rec_form,
-                            'ingr_list': ingredient_list,
                             'categories': categories,
                             'recipes': recipes,
                             'recipe': recipe
                         })
 
-                    # create recipe with new category       
-                    recipe = edit_recipe_new_cat(request, ingredient_list, recipe)
+                    # edit recipe with new category       
+                    recipe = edit_recipe_new_cat(request, recipe)
                     recipe.save()
 
                     return redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))
                 
-                # create recipe with existing category
+                # edit recipe with existing category
                 elif request.POST.get('category'):
-                    recipe = edit_recipe_existing_cat(request, ingredient_list, recipe)
+                    recipe = edit_recipe_existing_cat(request, recipe)
                     recipe.save()
 
                     return redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))    
 
-        # error message for if no category is given
-            else:
-                messages.info(request, 'Note: You must give a title, category and body to save the recipe')
+            # error message for incomplete form
+        else:
+            messages.info(request, 'Note: You must give a title, category and body to save the recipe') 
 
-                ingredient_list = recipe.ingredients.split('#')     
-                data = collect_data(request)               
-                rec_form = RecipeForm(user=request.user, initial=data)
+            data = {'category': request.POST.get('category'),
+            'title': request.POST.get('title'),
+            'body': request.POST.get('body'),
+            'servings': request.POST.get('servings'),
+            'ingredients': request.POST.get('ingredients') }
 
-                return render(request, 'recipes/edit.html', {
-                'rec_form': rec_form,
-                'recipe': recipe,
-                'ingr_list': ingredient_list,
-                'categories': categories,
-                'recipes': recipes,
-            })
+            rec_form = RecipeForm(user=request.user, initial=data)
+
+            return render(request, 'recipes/edit.html', {
+            'rec_form': rec_form,
+            'recipe': recipe,
+            'categories': categories,
+            'recipes': recipes,
+        })
+
+    
+
+    # retrieve recipe to be edited
+    recipe = Recipe.objects.get(pk=action)
+
+    # gather data to populate form to be edited   
+    data = {'title': recipe.title,
+            'category': recipe.category,
+            'servings': recipe.servings,
+            'body': recipe.body,
+            'ingredients': recipe.ingredients} 
+    
+    # set up forms etc.
+    rec_form = RecipeForm(initial=data, user=request.user)        
             
-
     return render(request, 'recipes/edit.html', {
         'categories': categories,
         'recipes': recipes,
         'rec_form': rec_form,
-        'ingr_list': ingredient_list,
         'recipe': recipe,
     })
 
@@ -303,10 +264,6 @@ def view_recipe(request, rec_pk):
     recipes = Recipe.objects.filter(user__pk=user_pk)
     categories = Category.objects.filter(user__pk=user_pk)
     recipe = Recipe.objects.get(pk=rec_pk)
-    if recipe.ingredients:
-        ingr_list = recipe.ingredients.split('#')
-    else:
-        ingr_list = []    
 
     # some cleanup to find incomplete recepes or empty categories and deleting them
     if recipes:
@@ -329,7 +286,6 @@ def view_recipe(request, rec_pk):
 
     return render(request, 'recipes/view_recipe.html', {
         'recipe': recipe,
-        'ingr_list': ingr_list,
         'categories': categories,
         'recipes': recipes,
     })

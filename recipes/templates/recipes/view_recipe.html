@@ -13,24 +13,14 @@
     <!--list ingredients-->
     <!--if '!' is appended to start, the ingredient is a heading and is printed in bold-->
     <!--the '!' gets sliced off the end-->
-    {% if ingr_list %}
       <hr>
       <div>
         <ul>
-          {% for i in ingr_list %}
-            {% if i %} 
-              {% if i.0 == '!' %}
-                <br>
-                <strong>{{i| slice:'1:'}}</strong>
-              {% else %}
-                <li>{{i}}</li>
-              {% endif %}
-            {% endif %}   
-          {% endfor %}
+          {{ recipe.ingredients| safe }}
         </ul>
       </div>
       <hr>
-    {% endif %}
+
 
     <br>
     <div class="center">

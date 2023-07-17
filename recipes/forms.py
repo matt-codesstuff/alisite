@@ -7,8 +7,7 @@ from .models import Recipe, Category
 class RecipeForm(forms.ModelForm):
 
     # custom form fields
-    ingredient = forms.CharField(widget=forms.TextInput(
-        attrs={'autofocus': True}), required=False)
+    ingredients = forms.CharField(widget=CKEditorWidget(config_name='ingredients'), required=False)
     new_category = forms.CharField(required=False, label="New Category")
     cat_image = forms.URLField(required=False, label="Image", widget=forms.TextInput(
         attrs={'placeholder': 'paste link here'}))
@@ -43,7 +42,7 @@ class RecipeForm(forms.ModelForm):
         if not title:
             raise forms.ValidationError(
                 "No title")
-  
+
 
 class ScraperForm(forms.Form):
 
