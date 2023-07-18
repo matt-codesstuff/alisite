@@ -83,7 +83,7 @@ def create(request, action):
             
             # create recipe with existing category
             elif request.POST.get('category'):
-                recipe = create_recipe_existing_cat(user_pk, request, ingredient_list)
+                recipe = create_recipe_existing_cat(user_pk, request)
                 recipe.save()
 
                 return redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))    
@@ -94,6 +94,9 @@ def create(request, action):
                 
             data = collect_data(request)               
             rec_form = RecipeForm(user=request.user, initial=data)
+
+            if not action.split(',')[-1]:
+                recipe = ''
 
             return render(request, 'recipes/create.html', {
             'rec_form': rec_form,

@@ -69,7 +69,7 @@ CKEDITOR_CONFIGS = {
             ['BulletedList'],
             ['Source'],
         ],
-        'width': '217px',
+        'width': '220px',
         'height': '500px'
     },
 }
