@@ -13,6 +13,13 @@
   src: url('fonts/Ambition\ &\ Ink\ Demo.ttf & Ink Demo.ttf') format('truetype');
 }
 
+
+input[type="text"], textarea {
+
+  background-color : white; 
+
+}
+
 a {
   text-decoration: none;
   color: rgb(104, 180, 222);
