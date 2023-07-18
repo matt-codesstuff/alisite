@@ -1,7 +1,7 @@
 <div class="center">
     <div style="border: 1px solid #a9aaaa; border-radius:  15px; padding: 20px; background-color: #383e3e">
         <div class="cat-flex">
-        <!--csrf_token and ingredient form-->
+            <!--csrf_token-->
             {% csrf_token %}
             {{rec_form.ingredients.label}}
             <br> <br>
@@ -30,9 +30,8 @@
                         {{rec_form.servings}}
                     </div>
                     <br><br>
+                </div>
             </div>
-            </div>
-
         </div> 
         <div class="col">
             <div class="center">
@@ -54,10 +53,9 @@
                 </div>
             </div>
         </div> 
-    </div>
-   
+    </div>   
 </div>
-<br><br>
+<br>
 <hr>
 <br><br>            
 <div class="center">

@@ -1,13 +1,10 @@
 {% extends 'recipes/header.html' %}
 {% block content %}
-    <div style="display: flex; justify-content: center;">
-        <h1>New Recipe</h1>
-        <br /><br /><br />
-    </div>
+    <h1>New Recipe</h1>
+    <br /><br />
 
-    <!--main recipe form-->
     <form action="{% url 'recipes:create' %}" method="POST">
-        {% include "recipes/includes/recipe_form_create.html" %}                
+        {% include "recipes/includes/recipe_form_create.html" %}
+             
     </form>
-
 {% endblock %}

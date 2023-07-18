@@ -1,11 +1,10 @@
 {% extends 'recipes/header.html' %} 
 {% block content %}
-  <h3 style="text-align: center;">Edit</h3>
-  <h5 style="text-align: center;">{{recipe.title}}</h5>
-  <br>
-  <br>
-  <form action="/edit_recipe/save,{{recipe.pk}}" method="POST">
-    {% include "recipes/includes/recipe_form_edit.html" %}
-  </form>
-
+    <h3>Edit</h3>
+    <h5>{{recipe.title}}</h5>
+    <br> <br>
+    
+    <form action="{% url 'recipes:edit_recipe' rec_pk=recipe.pk %}"method="POST">
+      {% include "recipes/includes/recipe_form_edit.html" %}
+    </form>
 {% endblock %}
