@@ -45,7 +45,7 @@ def index(request):
 
 
 # creating new recipe
-def create(request, action):
+def create(request):
 
     user_pk = request.user.pk  
     recipes = Recipe.objects.filter(user__pk=user_pk)
@@ -72,7 +72,6 @@ def create(request, action):
                         'rec_form': rec_form,
                         'categories': categories,
                         'recipes': recipes,
-                        'recipe': recipe
                     })
 
                 # create recipe with new category       
@@ -95,28 +94,19 @@ def create(request, action):
             data = collect_data(request)               
             rec_form = RecipeForm(user=request.user, initial=data)
 
-            if not action.split(',')[-1]:
-                recipe = ''
-
             return render(request, 'recipes/create.html', {
             'rec_form': rec_form,
-            'recipe': recipe,
             'categories': categories,
             'recipes': recipes,
         })
 
-    if action == 'new':
-        recipe = ''
-        rec_form = RecipeForm(user=request.user, initial={'servings': 1}) 
-    else:
-        data = collect_data(request)
-        rec_form = RecipeForm(user=request.user, initial=data)       
 
+    rec_form = RecipeForm(user=request.user, initial={'servings': 1}) 
+    
     return render(request, 'recipes/create.html', {
         'rec_form': rec_form,
         'categories': categories,
         'recipes': recipes,
-        'recipe': recipe,
     })
 
 # editing a recipe
@@ -266,26 +256,7 @@ def view_recipe(request, rec_pk):
     user_pk = request.user.pk
     recipes = Recipe.objects.filter(user__pk=user_pk)
     categories = Category.objects.filter(user__pk=user_pk)
-    recipe = Recipe.objects.get(pk=rec_pk)
-
-    # some cleanup to find incomplete recepes or empty categories and deleting them
-    if recipes:
-        for rec in recipes:
-            if not rec.title or not rec.category or not rec.body:
-                rec.delete()
-                recipes = Recipe.objects.filter(user__pk=user_pk)
-    if categories:
-        for cat in categories:
-            empty_cat = True
-            for rec in recipes:
-                if rec.category.pk == cat.pk:
-                    empty_cat = False
-            if empty_cat:
-                cat_del = Category.objects.get(pk=cat.pk)
-                cat_del.delete()
-
-            # update list of categories to reflect deleted ones    
-            categories = Category.objects.filter(user__pk=user_pk)   
+    recipe = Recipe.objects.get(pk=rec_pk) 
 
     return render(request, 'recipes/view_recipe.html', {
         'recipe': recipe,

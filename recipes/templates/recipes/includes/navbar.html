@@ -26,7 +26,7 @@
                 </li>
               {% endfor %}          
               <li>
-                <a style="color: whitesmoke;" class="nav-link" href="{% url 'recipes:create' action='new' %}">New</a>
+                <a style="color: whitesmoke;" class="nav-link" href="{% url 'recipes:create' %}">New</a>
               </li>
               <li>
                 <a style="color: whitesmoke;" class="nav-link" href="{% url 'recipes:get_recipe' %}">From The Internet</a>
@@ -34,7 +34,7 @@
             </ul>         
         </div>
         <div style="margin-right: 25px;">
-          <a href="/logout" style="color:whitesmoke"><small>Logout</small></a>
+          <a href="{% url 'recipes:logout' %}" style="color:whitesmoke"><small>Logout</small></a>
         </div> 
       {% endif %}        
     </div>

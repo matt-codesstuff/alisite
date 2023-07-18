@@ -3,7 +3,6 @@
   <h3 style="text-align: center;">Edit</h3>
   <h5 style="text-align: center;">{{recipe.title}}</h5>
   <br>
-  <hr /> 
   <br>
   <form action="/edit_recipe/save,{{recipe.pk}}" method="POST">
     {% include "recipes/includes/recipe_form_edit.html" %}

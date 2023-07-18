@@ -6,9 +6,8 @@
     </div>
 
     <!--main recipe form-->
-    <form action="/create/save,{{recipe.pk}}" method="POST">
-        {% include "recipes/includes/recipe_form_create.html" %}        
-        
+    <form action="{% url 'recipes:create' %}" method="POST">
+        {% include "recipes/includes/recipe_form_create.html" %}                
     </form>
 
 {% endblock %}

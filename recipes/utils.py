@@ -224,99 +224,18 @@ def scrape_recipe(user_pk, request, online_recipe, new_cat):
     return recipe
 
 def collect_data(request):    
-    if request.POST.get('category'):
-        data = {'category': request.POST.get('category'),
-                'title': request.POST.get('title'),
-                'body': request.POST.get('body'),
-                'servings': request.POST.get('servings'),
-                'ingredient': request.POST.get('ingredient')}
-    elif request.POST.get('new_category'):
-        data = {'category': request.POST.get('new_category'),
-                'title': request.POST.get('title'),
-                'body': request.POST.get('body'),
-                'servings': request.POST.get('servings'),
-                'ingredient': request.POST.get('ingredient')} 
-    else:
-        data = {'title': request.POST.get('title'),
-                'body': request.POST.get('body'),
-                'servings': request.POST.get('servings'),
-                'ingredient': request.POST.get('ingredient')}       
+
+    data = {'category': request.POST.get('category'),
+            'new_category': request.POST.get('new_category'),
+            'title': request.POST.get('title'),
+            'body': request.POST.get('body'),
+            'servings': request.POST.get('servings'),
+            'cat_image': request.POST.get('cat_image'),
+            'cat_description': request.POST.get('cat_description'),
+            'ingredients': request.POST.get('ingredients'),}
     
     return data
 
-# manipulate the ingredients of the recipe
-# the action argument lets the function know what action is to be taken
-# this function returns the newly edited and saved recipe.
-# in the case that no action was taken, it returns an http response
-def ingredient_handler(request, action):
-    user_pk = request.user.pk
-    recipes = Recipe.objects.filter(user__pk=user_pk)
-    categories = Category.objects.filter(user__pk=user_pk)
-
-    # if recipe pk has been given it means we need to edit current recipe as apposed to creating a new one
-    if len(action) > UUID_LEN:
-        recipe_pk = action.split(',')[-1]
-        action = action.split(',')[0]
-        recipe = Recipe.objects.get(pk=recipe_pk)
-        ingredient_list = recipe.ingredients.split('#')
-        ingredient = request.POST.get('ingredient')
-        if ingredient:
-            if 'add' in action:
-                ingredient_list.append(ingredient)
-                ingredient_string = '#'.join(ingr for ingr in ingredient_list)
-                recipe.ingredients = ingredient_string
-                recipe.save()
-
-                return recipe
-            
-            if 'header' in action:
-                ingredient_list.append(f'!{ingredient.capitalize()}')
-                ingredient_string = '#'.join(ingr for ingr in ingredient_list)
-                recipe.ingredients = ingredient_string
-                recipe.save()
-
-                return recipe
-                
-        if 'del' in action:
-            if ingredient_list:
-                del ingredient_list[-1]
-                ingredient_string = '#'.join(ingr for ingr in ingredient_list)       
-                recipe.ingredients = ingredient_string
-                recipe.save()
-
-                return recipe           
-        else:
-            return recipe              
-    else:
-
-        # first time creating this recipe
-        ingredient = request.POST.get('ingredient')
-        if ingredient:
-            ingredient_list = []
-            if 'add' in action:                
-                ingredient_list.append(ingredient)
-                recipe = create_recipe_no_cat(user_pk, request, ingredient_list)
-                recipe.save()
-
-                return recipe
-                                
-            elif 'header' in action:
-                ingredient_list.append(f'!{ingredient.capitalize()}')
-                recipe = create_recipe_no_cat(user_pk, request, ingredient_list)
-                recipe.save()
-
-                return recipe                        
-
-        data = collect_data(request)
-        rec_form = RecipeForm(initial=data)
-        ingredient_list = []
-
-        return render(request, 'recipes/create.html', {
-                    'rec_form': rec_form,
-                    'ingr_list': ingredient_list,
-                    'categories': categories,
-                    'recipes': recipes,
-                })
 
 
 
