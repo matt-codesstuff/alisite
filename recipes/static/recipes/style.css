@@ -14,7 +14,7 @@
 }
 
 
-input[type="text"], textarea {
+input[type="text"], input[type="password"], input[type="select"], input[type="number"], textarea {
 
   background-color : white; 
 
