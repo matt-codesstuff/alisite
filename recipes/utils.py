@@ -6,7 +6,6 @@ from django.contrib import messages
 from .models import Category, Recipe
 from .forms import RecipeForm
 
-UUID_LEN = 36
 
 def get_new_cat(request):
 
@@ -30,7 +29,7 @@ def create_recipe_new_cat(user_pk, request):
     new_cat.save()
 
     # this bit of code is because no error handling was implemented for when no servings were given
-    # not going to fuck around with error handling now. this fixes it
+    # not going to mess around with error handling now. this fixes it
     if not request.POST.get('servings'):
         servings = 1
     else:    
@@ -55,7 +54,7 @@ def create_recipe_new_cat(user_pk, request):
 def create_recipe_existing_cat(user_pk, request):
 
     # this bit of code is because no error handling was implemented for when no servings were given
-    # not going to fuck around with error handling now. this fixes it
+    # not going to mess around with error handling now. this fixes it
     if not request.POST.get('servings'):
         servings = 1
     else:    
@@ -78,35 +77,10 @@ def create_recipe_existing_cat(user_pk, request):
 
     return recipe 
 
-def create_recipe_no_cat(user_pk, request):
-
-    # this bit of code is because no error handling was implemented for when no servings were given
-    # not going to fuck around with error handling now. this fixes it
-    if not request.POST.get('servings'):
-        servings = 1
-    else:    
-        servings = request.POST.get('servings')
-
-    # get fields ready
-    user = User.objects.get(pk=user_pk)
-    title = request.POST.get('title')
-    body = request.POST.get('body')
-    ingredients = request.POST.get('ingredients')
-
-    # create recipe and return to view to be saved
-    recipe = Recipe(
-               user=user,
-               title=title,
-               body = body,
-               servings=servings,
-               ingredients=ingredients)
-
-    return recipe
-
 def edit_recipe_new_cat(request, recipe):
 
     # this bit of code is because no error handling was implemented for when no servings were given
-    # not going to fuck around with error handling now. this fixes it
+    # not going to mess around with error handling now. this fixes it
     if not request.POST.get('servings'):
         servings = 1
     else:    
@@ -128,7 +102,7 @@ def edit_recipe_new_cat(request, recipe):
 def edit_recipe_existing_cat(request, recipe):
 
     # this bit of code is because no error handling was implemented for when no servings were given
-    # not going to fuck around with error handling now. this fixes it
+    # not going to mess around with error handling now. this fixes it
     if not request.POST.get('servings'):
         servings = 1
     else:    
@@ -145,42 +119,21 @@ def edit_recipe_existing_cat(request, recipe):
 
     return recipe
 
-def edit_recipe_no_cat(request, recipe):
-
-    # this bit of code is because no error handling was implemented for when no servings were given
-    # not going to fuck around with error handling now. this fixes it
-    if not request.POST.get('servings'):
-        servings = 1
-    else:    
-        servings = request.POST.get('servings')
-
-    recipe.title = request.POST.get('title')
-    recipe.body = request.POST.get('body')
-    recipe.servings = servings
-    recipe.ingredients = request.POST.get('ingredients')
-
-    return recipe
-
 def scrape_recipe_new_cat(user_pk, request, online_recipe):
     
     # create and save new category
     new_cat = get_new_cat(request)
     new_cat.save()
     
-    # create recipe and return to view
+    # create recipe and return to view to be saved
     recipe = scrape_recipe(user_pk, request, online_recipe, new_cat)
     return recipe
 
-def scrape_recipe(user_pk, request, online_recipe, new_cat):
-    
-    # check if new category
-    if new_cat:
-        category = new_cat
-    else:
-        category_pk = request.POST.get('category')
-        category = Category.objects.get(pk=category_pk)    
+def scrape_recipe(user_pk, request, online_recipe):
 
-    # get the fields ready   
+    # get the fields ready
+    category_pk = request.POST.get('category')
+    category = Category.objects.get(pk=category_pk)      
     user = User.objects.get(pk=user_pk)
     title = online_recipe.title()
     servings = int(online_recipe.yields()[0])
@@ -198,7 +151,7 @@ def scrape_recipe(user_pk, request, online_recipe, new_cat):
 
     # format the body
     body_len = len(online_recipe.instructions_list())    
-    if body_len < 7:
+    if body_len < 8:
         formatted_body = ''
         step_count = 1
         for instruction in online_recipe.instructions_list():
@@ -224,7 +177,6 @@ def scrape_recipe(user_pk, request, online_recipe, new_cat):
     return recipe
 
 def collect_data(request):    
-
     data = {'category': request.POST.get('category'),
             'new_category': request.POST.get('new_category'),
             'title': request.POST.get('title'),

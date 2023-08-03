@@ -11,7 +11,6 @@ from .forms import RecipeForm, ScraperForm
 from .models import Recipe, Category
 from .utils import *
 
-UUID_LEN = 36
 
 # homepage
 def index(request):
@@ -19,12 +18,7 @@ def index(request):
     recipes = Recipe.objects.filter(user__pk=user_pk)
     categories = Category.objects.filter(user__pk=user_pk)
 
-    # some cleanup to find incomplete recepes or empty categories and delete them
-    if recipes:
-        for rec in recipes:
-            if not rec.title or not rec.category or not rec.body:
-                rec.delete()
-                recipes = Recipe.objects.filter(user__pk=user_pk)
+    # some cleanup to find empty categories and delete them
     if categories:
         for cat in categories:
             empty_cat = True
@@ -42,7 +36,6 @@ def index(request):
         'categories': categories,
         'recipes': recipes,
     })
-
 
 # creating new recipe
 def create(request):
@@ -200,37 +193,58 @@ def get_recipe(request):
     # handle for form submission
     if request.method == 'POST':
         form = ScraperForm(request.POST)
-        try:
-            if form.is_valid():                        
-                recipe_url = request.POST.get('url')
-                online_recipe = scrape_me(recipe_url, wild_mode = True)                                   
-                new_category = request.POST.get('new_category')
-
+        if form.is_valid():
+            try:                                                       
+                
                 # check if new category alredy exists
+                new_category = request.POST.get('new_category')
                 category_names = [cat.name for cat in categories]
                 if new_category in category_names:
                     messages.info(request, 'Category Already Exists')
                     return redirect(reverse('recipes:get_recipe', kwargs={'user_pk': user_pk}))
                 
                 # handle for new category
-                if new_category:                   
+                if new_category:
+                    recipe_url = request.POST.get('url')
+                    online_recipe = scrape_me(recipe_url, wild_mode = True)                       
                     recipe = scrape_recipe_new_cat(user_pk, request, online_recipe)
                     recipe.save()                   
-
                     return  redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))
 
                 # handle for existing category 
                 else:
-                    recipe = scrape_recipe(user_pk, request, online_recipe, None)
+                    recipe_url = request.POST.get('url')
+                    online_recipe = scrape_me(recipe_url, wild_mode = True)    
+                    recipe = scrape_recipe(user_pk, request, online_recipe)
                     recipe.save()
-
                     return  redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))
-            else:
-                messages.error('Please give a category')
-                return redirect('recipes:get_recipe')    
-        except:
-            messages.error(request, 'Oops, something went wrong. Please check that you have given a category, it is also possible that this URL does not contain a recipe')
-            return redirect('recipes:get_recipe') 
+            except:
+                messages.error(request, 'Oops, something went wrong. Please check that you have given a category, it is also possible that this URL does not contain a recipe')
+                data = {'url': request.POST.get('url'),
+                        'category': request.POST.get('category'),
+                        'new_category': request.POST.get('new_category'),
+                        'cat_image': request.POST.get('cat_image'),
+                        'cat_description': request.POST.get('cat_description')}
+                form = ScraperForm(initial=data, user=request.user)
+                return render(request, 'recipes/get_recipe.html', {
+                    'form': form,
+                    'recipes': recipes,
+                    'categories': categories
+                })                        
+        else:
+            messages.error(request, 'Please give a category')
+            data = {'url': request.POST.get('url'),
+                    'category': request.POST.get('category'),
+                    'new_category': request.POST.get('new_category'),
+                    'cat_image': request.POST.get('cat_image'),
+                    'cat_description': request.POST.get('cat_description')}
+            form = ScraperForm(initial=data, user=request.user)
+            return render(request, 'recipes/get_recipe.html', {
+                'form': form,
+                'recipes': recipes,
+                'categories': categories
+            })      
+
 
     return render(request, 'recipes/get_recipe.html', {
         'form': form,
@@ -251,13 +265,11 @@ def view_recipe(request, rec_pk):
         'recipes': recipes,
     })
 
-
 # deleting a recipe
 def delete_recipe(request, rec_pk):
     recipe = Recipe.objects.get(pk=rec_pk)
     recipe.delete()
     return redirect('recipes:index')
-
 
 # register a new user
 def register(request):
@@ -276,13 +288,11 @@ def register(request):
         'form': form,
     })
 
-
 # logout user
 def logout_request(request):
     logout(request)
     messages.info(request, "Logged out successfully")
     return redirect('recipes:index')
-
 
 # login user
 def login_request(request):

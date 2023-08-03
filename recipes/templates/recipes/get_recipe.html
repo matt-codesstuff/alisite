@@ -12,7 +12,7 @@
     <form action="{% url 'recipes:get_recipe' %}" method="post">
         {% csrf_token %}
         <div class="center">
-            <div class="column-container" style="border: 1px solid #ccc; border-radius: 15px; padding: 33px; background-color: #383e3e">
+            <div class="column-container" style="border: 1px solid #ccc; border-radius: 15px; padding: 33px; background-color: #383e3e;">
                 <div class="column-container" style="align-items: center;">
                     <div class="cat-flex" >
                         {{ form.url.label }}

@@ -100,7 +100,8 @@ h6 {
 .cat-flex {
   display: flex;
   flex-direction: column;
-  width: 230px;
+  max-width: 500px;
+  width: 100%;
   margin: 3px;
   padding: 7px;
 }

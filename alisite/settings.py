@@ -27,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['aliskitchen-67f842b12558.herokuapp.com', '127.0.0.1']
 
@@ -48,15 +48,13 @@ INSTALLED_APPS = [
 CKEDITOR_CONFIGS = {
    'default': {
        'toolbar_Full': [
-            ['Styles', 'Format', 'Bold', 'Italic', 'Underline', 'Strike', 'SpellChecker', 'Undo', 'Redo'],
-            ['Link', 'Unlink', 'Anchor'],
+            ['Styles', 'Format', 'Bold', 'Italic', 'Underline', 'Strike', 'SpellChecker', 'Undo', 'Redo'], ['Maximize'],
             ['Image', 'Flash', 'Table', 'HorizontalRule'],
             ['TextColor', 'BGColor'],
-            ['Smiley', 'SpecialChar'], ['Source'],
+            ['Smiley', 'SpecialChar'], 
             ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
             ['NumberedList','BulletedList'],
-            ['Indent','Outdent'],
-            ['Maximize'],
+            
         ],
         'width': '100%',
         'height': '740',
@@ -67,10 +65,12 @@ CKEDITOR_CONFIGS = {
         'toolbar_Custom':[ 
             ['Bold'],
             ['BulletedList'],
-            ['Source'],
         ],
-        'width': '220px',
-        'height': '500px'
+        'width': '100%',
+        'autoGrow_onStartup': True,
+        'autoGrow_minHeight': 350,
+        'autoGrow_maxHeight': 850,
+        'extraPlugins': 'autogrow',
     },
 }
 
