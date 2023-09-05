@@ -108,11 +108,15 @@ WSGI_APPLICATION = 'alisite.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
+POSTGRES_PW = os.environ.get('POSTGRES_PW')
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'd7qp1i6r48rgfd',
+        'USER': 'fejtiqojcwxqto',
+        'PASSWORD': POSTGRES_PW,
+        'HOST': 'ec2-35-169-9-79.compute-1.amazonaws.com',
+        'PORT': '5432',
     }
 }
 
