@@ -302,7 +302,7 @@ def login_request(request):
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
-            if user is not None:
+            if user != None:
                 login(request, user)
                 return redirect('recipes:index')
             else:
