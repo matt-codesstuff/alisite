@@ -1,0 +1,161 @@
+@font-face {
+  font-family: 'JosefinSans';
+  src: url('fonts/JosefinSans-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'AlwaysForever';
+  src: url('fonts/always\ forever.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'AmbitionandInk';
+  src: url('fonts/Ambition\ &\ Ink\ Demo.ttf & Ink Demo.ttf') format('truetype');
+}
+
+
+input[type="text"], input[type="password"], input[type="select"], input[type="number"], textarea {
+
+  background-color : white; 
+
+}
+
+a {
+  text-decoration: none;
+  color: rgb(104, 180, 222);
+}
+
+body {
+  color: whitesmoke;
+  background-color: #2C3333;
+}
+
+hr {
+  display: block;
+  height: 1px;
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 1em 0;
+  padding: 0;
+}
+
+h1 {
+  text-align: center; 
+  margin-bottom: 50px; 
+  font-family: JosefinSans; 
+  font-size: 4rem;
+}
+
+h3 {
+  text-align: center; 
+  font-family: JosefinSans; 
+  font-size: 3rem;
+}
+
+h5 {
+  text-align: center; 
+  font-family: JosefinSans; 
+  font-size: 2rem;
+}
+
+h6 {
+  text-align: center; 
+  font-family: JosefinSans; 
+  font-size: 2rem;
+}
+
+.row-container {
+    display: flex;
+    flex-direction: row;        
+  }
+
+.column-container {
+  display: flex;
+  flex-direction: column;       
+}
+
+.seperate {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ingredient-list {
+  background-color: rgb(243, 242, 242);
+  color:#2C3333;
+  width: 285px;
+  min-height: 500px;
+  padding: 10px;
+  margin-bottom: 50px;
+  border-radius: 3px;
+  font-size: smaller;
+}
+
+.button-flex {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  margin-bottom: 10px;  
+}
+
+.cat-flex {
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  width: 100%;
+  margin: 3px;
+  padding: 7px;
+}
+
+.recipe-text{
+  width: 800px;
+  height: 100%;
+  background-color: whitesmoke;
+  color: black;
+  padding: 20px;
+  padding-top: 35px;
+  padding-bottom: 100px;
+  border: 1px solid #1d2121;
+  border-radius: 5px;
+}
+
+.edit-button {
+  display: flex;
+  justify-content: left;
+  width: 800px;
+}
+
+.right {
+  display: flex;
+  justify-content: right;
+}
+
+.left {
+  display: flex;
+  justify-content: left;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+.footer-div {
+  height: 88px;
+}
+
+
+#button {
+  width: 90px;
+  border-radius: 8px;
+  margin: 3px;
+  background-color: rgb(185, 186, 187);
+  border: none;
+}
+
+#button:hover {
+  background-color: #7a56b9;
+  color: whitesmoke;
+
+
+}
+
