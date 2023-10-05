@@ -28,8 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+
 
 ALLOWED_HOSTS = ['aliskitchen-67f842b12558.herokuapp.com', '127.0.0.1']
 
@@ -108,19 +107,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'alisite.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-POSTGRES_PW = os.environ.get('POSTGRES_PW')
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'd7qp1i6r48rgfd',
-        'USER': 'fejtiqojcwxqto',
-        'PASSWORD': POSTGRES_PW,
-        'HOST': 'ec2-35-169-9-79.compute-1.amazonaws.com',
-        'PORT': '5432',
-    }
-}
 
 
 
@@ -170,4 +156,4 @@ MEDIA_URL = ''
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
+
