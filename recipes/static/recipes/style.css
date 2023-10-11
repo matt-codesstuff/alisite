@@ -1,3 +1,4 @@
+/* import fonts */
 @font-face {
   font-family: 'JosefinSans';
   src: url('fonts/JosefinSans-Regular.ttf') format('truetype');
@@ -13,13 +14,13 @@
   src: url('fonts/Ambition\ &\ Ink\ Demo.ttf & Ink Demo.ttf') format('truetype');
 }
 
-
+/* need to set the background color for all field inputs because, for some reason
+I am yet to figure out, the background is completely transparent on mobile devices */
 input[type="text"], input[type="password"], input[type="select"], input[type="number"], textarea {
-
   background-color : white; 
-
 }
 
+/* custom css starts here */
 a {
   text-decoration: none;
   color: rgb(104, 180, 222);
@@ -77,17 +78,6 @@ h6 {
 .seperate {
   display: flex;
   justify-content: space-between;
-}
-
-.ingredient-list {
-  background-color: rgb(243, 242, 242);
-  color:#2C3333;
-  width: 285px;
-  min-height: 500px;
-  padding: 10px;
-  margin-bottom: 50px;
-  border-radius: 3px;
-  font-size: smaller;
 }
 
 .button-flex {

@@ -130,25 +130,35 @@ def scrape_recipe_new_cat(user_pk, request, online_recipe):
     return recipe
 
 def scrape_recipe(user_pk, request, online_recipe):
-
+    
     # get the fields ready
     category_pk = request.POST.get('category')
     category = Category.objects.get(pk=category_pk)      
     user = User.objects.get(pk=user_pk)
+    
     title = online_recipe.title()
     servings = int(online_recipe.yields()[0])
     site = online_recipe.host()
-
-    # format list of ingredients to html string
+    
+    # sometimes running the .ingredients() method returns an error
+    # in that case, we get the ingredients from the object's raw data attribute
+    try:
+        ingredient_list = online_recipe.ingredients()
+    except AttributeError:
+        ingredient_list = online_recipe.schema.data['recipeIngredient']  
+        
+    # format list of ingredients into an html string
     ingredients = ''
-    for i, ingr in enumerate(online_recipe.ingredients(), 1):
+    for i, ingr in enumerate(ingredient_list, 1):
         if i == 1:
             ingredients += f'<ul><li>{ingr}</li>'
-        elif i == len(online_recipe.ingredients()):
+        elif i == len(ingredient_list):
             ingredients += f'<li>{ingr}</li></ul>'
         else:
-            ingredients += f'<li>{ingr}</li>'        
-
+            ingredients += f'<li>{ingr}</li>' 
+        print(ingredients)   
+                    
+   
     # format the body
     body_len = len(online_recipe.instructions_list())    
     if body_len < 8:
@@ -164,7 +174,7 @@ def scrape_recipe(user_pk, request, online_recipe):
                 formatted_body += f'<li>{instruction}</li></ul><br/>' 
             else:
                 formatted_body += f'<li>{instruction}</li><br />'              
-
+    
     # create recipe and return to view to be saved        
     recipe = Recipe(user=user,
                 title =title, 
@@ -173,7 +183,7 @@ def scrape_recipe(user_pk, request, online_recipe):
                 ingredients=ingredients, 
                 servings=servings, 
                 site=site)
-           
+          
     return recipe
 
 def collect_data(request):    
