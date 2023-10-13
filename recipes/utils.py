@@ -129,11 +129,14 @@ def scrape_recipe_new_cat(user_pk, request, online_recipe):
     recipe = scrape_recipe(user_pk, request, online_recipe, new_cat)
     return recipe
 
-def scrape_recipe(user_pk, request, online_recipe):
+def scrape_recipe(user_pk, request, online_recipe, new_cat=False):
     
     # get the fields ready
-    category_pk = request.POST.get('category')
-    category = Category.objects.get(pk=category_pk)      
+    if new_cat:
+        category = new_cat
+    else:    
+        category_pk = request.POST.get('category')
+        category = Category.objects.get(pk=category_pk)      
     user = User.objects.get(pk=user_pk)
     
     title = online_recipe.title()
@@ -157,9 +160,7 @@ def scrape_recipe(user_pk, request, online_recipe):
             ingredients += f'<li>{ingr}</li></ul>'
         else:
             ingredients += f'<li>{ingr}</li>' 
-        print(ingredients)   
-                    
-   
+                       
     # format the body
     # if there are less than eight steps in the recipe, add a header to each step
     # if it's eight steps or more, create a bulleted list of the steps

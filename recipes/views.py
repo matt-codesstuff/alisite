@@ -204,9 +204,9 @@ def get_recipe(request):
                     return redirect(reverse('recipes:get_recipe', kwargs={'user_pk': user_pk}))
                 
                 # handle for new category
-                if new_category:
+                if new_category:                  
                     recipe_url = request.POST.get('url')
-                    online_recipe = scrape_me(recipe_url, wild_mode = True)                       
+                    online_recipe = scrape_me(recipe_url, wild_mode = True)                     
                     recipe = scrape_recipe_new_cat(user_pk, request, online_recipe)
                     recipe.save()                   
                     return  redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))
