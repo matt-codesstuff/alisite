@@ -15,7 +15,7 @@ def get_new_cat(request):
     image = request.POST.get('cat_image')
     description = request.POST.get('cat_description')
 
-    # create new category and return to function to be saved
+    # create new category and return to calling function to be saved
     category = Category(user=user,
                  name=name,
                  image=image,
@@ -148,6 +148,7 @@ def scrape_recipe(user_pk, request, online_recipe):
         ingredient_list = online_recipe.schema.data['recipeIngredient']  
         
     # format list of ingredients into an html string
+    # to be displayed in the ckeditor widget
     ingredients = ''
     for i, ingr in enumerate(ingredient_list, 1):
         if i == 1:
@@ -160,6 +161,8 @@ def scrape_recipe(user_pk, request, online_recipe):
                     
    
     # format the body
+    # if there are less than eight steps in the recipe, add a header to each step
+    # if it's eight steps or more, create a bulleted list of the steps
     body_len = len(online_recipe.instructions_list())    
     if body_len < 8:
         formatted_body = ''
@@ -186,6 +189,7 @@ def scrape_recipe(user_pk, request, online_recipe):
           
     return recipe
 
+# collect data for re-populating forms
 def collect_data(request):    
     data = {'category': request.POST.get('category'),
             'new_category': request.POST.get('new_category'),
