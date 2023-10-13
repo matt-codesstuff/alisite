@@ -38,10 +38,10 @@ class RecipeForm(forms.ModelForm):
         title = cleaned_data.get('title')
         if not category and not new_category:
             raise forms.ValidationError(
-                "No category")
+                "No category given")
         if not title:
             raise forms.ValidationError(
-                "No title")
+                "No title given")
 
 
 class ScraperForm(forms.Form):

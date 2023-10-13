@@ -29,7 +29,7 @@ def create_recipe_new_cat(user_pk, request):
     new_cat.save()
 
     # this bit of code is because no error handling was implemented for when no servings were given
-    # not going to mess around with error handling now. this fixes it
+    # **note to self:** handle for this error in the form
     if not request.POST.get('servings'):
         servings = 1
     else:    
@@ -161,8 +161,8 @@ def scrape_recipe(user_pk, request, online_recipe, new_cat=False):
         else:
             ingredients += f'<li>{ingr}</li>' 
                        
-    # format the body
-    # if there are less than eight steps in the recipe, add a header to each step
+    # format the body to html string
+    # if there are less than eight steps in the recipe, add a 'step count' header to each step
     # if it's eight steps or more, create a bulleted list of the steps
     body_len = len(online_recipe.instructions_list())    
     if body_len < 8:
