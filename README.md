@@ -9,7 +9,7 @@ This is a simple web application that allows a user to store, edit and view thei
 - Scrape recipes from your favourite websites to add to your collection.
 - Easy access to all your recipes using the dropdown menus found on the landing page as well as the nav-bar.
 - Store recipes under categories for easy management.
-- View your recipes without the clutter ofen found on oline sites.
+- View your recipes without the clutter often found on online sites.
 
 ## Prerequisites
 
