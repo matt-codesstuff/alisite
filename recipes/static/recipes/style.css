@@ -40,29 +40,16 @@ hr {
   padding: 0;
 }
 
-h1 {
-  text-align: center; 
-  margin-bottom: 50px; 
-  font-family: JosefinSans; 
-  font-size: 4rem;
-}
-
-h3 {
-  text-align: center; 
-  font-family: JosefinSans; 
+.ambitionfont{
+  font-family: AmbitionandInk;
+  text-align: center;
   font-size: 3rem;
 }
 
-h5 {
-  text-align: center; 
-  font-family: JosefinSans; 
-  font-size: 2rem;
-}
-
-h6 {
-  text-align: center; 
-  font-family: JosefinSans; 
-  font-size: 2rem;
+.josefont{
+  font-family: JosefinSans;
+  text-align: center;
+  font-size: 3rem;
 }
 
 .row-container {
@@ -132,7 +119,6 @@ h6 {
 .footer-div {
   height: 88px;
 }
-
 
 #button {
   width: 90px;

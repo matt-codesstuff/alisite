@@ -51,7 +51,6 @@ def create(request):
             # check if new category was given
             new_category = request.POST.get('new_category')            
             if new_category:
-
                 # check if new category alredy exists
                 category_names = [cat.name for cat in categories]
                 if new_category in category_names:

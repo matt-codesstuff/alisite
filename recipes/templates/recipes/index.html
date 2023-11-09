@@ -29,22 +29,19 @@
                         </div>       
                     {% endfor %}    
                 {% else %}
-                    <h3 style="text-align: center;">No Recipes</h3>
+                    <h1 class="josefont" style="text-align: center;">No Recipes</h1>
                     <br><br>
-                    <h6 style="text-align: center;">Click on <a href="/create">"New"</a> to enter some recipes</h6>
-                    <br>
-                    <h6 style="text-align: center;">Or click on <a href="/get_recipe">"From The Internet"</a> to download recipes</h6>
+                    <p class="josefont" style="font-size: 1.75rem;"><a href="/create">New</a></p>
+                    <p class="josefont" style="font-size: 1.75rem;"><a href="/get_recipe">From The Internet</a></p>
                 {% endif %}
         {% else %}
             <div style="text-align: center;">
-                <h1>Welcome to Ali's Kitchen</h1>
-                <h3>The App designed to make storing and accessing your favourite recipes easy</h3>
+                <h1 class="josefont">Ali's Kitchen</h1>
                 <br>
-                <br>
-                <p>Log in <a href="/login"><strong>here</strong></a> to use the App</p>
-                <br>
-                <p>New visitor?</p>
-                <p>Register for a new account <a href="/register"><strong>here</strong></a></p>
+                <p><a href="/login"><strong>Login</strong></a></p>
+                <p><small>or</small></p>
+                <p><a href="/register"><strong>Register</strong></a></p>
+                <p><small>a new account</small></p>
             </div>
 
         {% endif %}        
