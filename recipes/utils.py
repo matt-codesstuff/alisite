@@ -25,7 +25,7 @@ def create_recipe_new_cat(user_pk, request):
     new_cat.save()
 
     # this bit of code is because no error handling was implemented for when no servings were given
-    # **note to self:** handle for this error in the form
+    # **Note to self:** handle for this error in the form
     if not request.POST.get('servings'):
         servings = 1
     else:    

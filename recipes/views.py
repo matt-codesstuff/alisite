@@ -214,12 +214,9 @@ def get_recipe(request):
                 else:
                      
                     recipe_url = request.POST.get('url')
-                    online_recipe = scrape_me(recipe_url, wild_mode = True) 
-                      
-                    recipe = scrape_recipe(user_pk, request, online_recipe)
-                    
-                    recipe.save()
-                    
+                    online_recipe = scrape_me(recipe_url, wild_mode = True)                      
+                    recipe = scrape_recipe(user_pk, request, online_recipe)   
+                    recipe.save()                    
                     return  redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))
             except:
                 messages.error(request, 'Oops, something went wrong. Please check that you have given a category, it is also possible that this URL does not contain a recipe')
