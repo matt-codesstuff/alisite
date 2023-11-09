@@ -1,10 +1,6 @@
 from django.contrib.auth.models import User
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.contrib import messages
 
 from .models import Category, Recipe
-from .forms import RecipeForm
 
 
 def get_new_cat(request):
@@ -53,8 +49,8 @@ def create_recipe_new_cat(user_pk, request):
 
 def create_recipe_existing_cat(user_pk, request):
 
-    # this bit of code is because no error handling was implemented for when no servings were given
-    # not going to mess around with error handling now. this fixes it
+    # this bit of code is because no error handling was implemented for when no servings is given
+    # **note to self** handle for this error in the form
     if not request.POST.get('servings'):
         servings = 1
     else:    
@@ -130,7 +126,7 @@ def scrape_recipe_new_cat(user_pk, request, online_recipe):
     return recipe
 
 def scrape_recipe(user_pk, request, online_recipe, new_cat=False):
-    
+     
     # get the fields ready
     if new_cat:
         category = new_cat
@@ -140,16 +136,22 @@ def scrape_recipe(user_pk, request, online_recipe, new_cat=False):
     user = User.objects.get(pk=user_pk)
     
     title = online_recipe.title()
-    servings = int(online_recipe.yields()[0])
     site = online_recipe.host()
+
+    # some times the scraper does not return any yields
+    # in that case, we set servings to one
+    try:
+        servings = int(online_recipe.yields()[0])
+    except IndexError:
+        servings = 1    
     
-    # sometimes running the .ingredients() method returns an error
+    # some times running the .ingredients() method returns an error
     # in that case, we get the ingredients from the object's raw data attribute
     try:
         ingredient_list = online_recipe.ingredients()
-    except AttributeError:
+    except AttributeError:       
         ingredient_list = online_recipe.schema.data['recipeIngredient']  
-        
+      
     # format list of ingredients into an html string
     # to be displayed in the ckeditor widget
     ingredients = ''
@@ -160,7 +162,7 @@ def scrape_recipe(user_pk, request, online_recipe, new_cat=False):
             ingredients += f'<li>{ingr}</li></ul>'
         else:
             ingredients += f'<li>{ingr}</li>' 
-                       
+                                          
     # format the body to html string
     # if there are less than eight steps in the recipe, add a 'step count' header to each step
     # if it's eight steps or more, create a bulleted list of the steps
@@ -187,7 +189,7 @@ def scrape_recipe(user_pk, request, online_recipe, new_cat=False):
                 ingredients=ingredients, 
                 servings=servings, 
                 site=site)
-          
+       
     return recipe
 
 # collect data for re-populating forms
