@@ -98,7 +98,7 @@ def edit_recipe_new_cat(request, recipe):
 def edit_recipe_existing_cat(request, recipe):
 
     # this bit of code is because no error handling was implemented for when no servings were given
-    # not going to mess around with error handling now. this fixes it
+    # **note to self** handle for this error in the form
     if not request.POST.get('servings'):
         servings = 1
     else:    

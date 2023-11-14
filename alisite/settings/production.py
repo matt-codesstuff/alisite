@@ -1,4 +1,7 @@
+import dj_database_url
+
 from alisite.settings.common import *
+
 
 DEBUG = False
 
@@ -10,7 +13,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'dfauc6hgt564k8',
         'USER': 'dfikrbvbkfbpkp',
-        'PASSWORD': 'f52b88c9ef529073e5cab45cbaa95392c53f317ac0b77c3b65ab2433ec162b5a',
+        'PASSWORD': POSTGRES_PW,
         'HOST': 'ec2-44-215-40-87.compute-1.amazonaws.com',
         'PORT': '5432',
     }

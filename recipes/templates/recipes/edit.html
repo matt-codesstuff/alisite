@@ -1,7 +1,7 @@
 {% extends 'recipes/header.html' %} 
 {% block content %}
     <h3 class='josefont'>Edit</h3>
-    <h5 class='josefont' style="font-size: 2rem">{{recipe.title}}</h5>
+    <h5 class='josefont' style="font-size: 2em;">{{recipe.title}}</h5>
     <br> <br>
     
     <form action="{% url 'recipes:edit_recipe' rec_pk=recipe.pk %}"method="POST">
