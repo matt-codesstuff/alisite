@@ -16,7 +16,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 
-
 ALLOWED_HOSTS = ['aliskitchen-67f842b12558.herokuapp.com', '127.0.0.1']
 
 
@@ -92,11 +91,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'alisite.wsgi.application'
-
-
-
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
