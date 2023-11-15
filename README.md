@@ -18,7 +18,7 @@ This site is hosted on https://aliskitchen-67f842b12558.herokuapp.com/
 
 Before you can run this application, you need to have the following installed on your system:
 
-- Python (3.7 or higher)
+- Python (3.8 or higher)
 - Django (4.2 or higher)
 - Git
 
