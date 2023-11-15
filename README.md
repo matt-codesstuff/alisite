@@ -4,8 +4,8 @@ This is a simple web application that allows a user to store, edit and view thei
  online. It uses the Python Django web-framework to create a CRUD (Create, Read, Update, Delete) back-end and uses HTML, CSS and Bootstrap to create a user-friendly, responsive front-end interface.
 
 ## Hosted
-This site is hosted on https://aliskitchen-67f842b12558.herokuapp.com/ 
-(Hosted on Heroku , connected to a seperate postgreSQL database)
+This site is hosted on https://aliskitchen-67f842b12558.herokuapp.com/  
+    (Hosted on Heroku , connected to a seperate postgreSQL database)
 
 ## Features
 
