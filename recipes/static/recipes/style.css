@@ -52,6 +52,12 @@ hr {
   font-size: 3rem;
 }
 
+.alwaysforever{
+  font-family: AlwaysForever;
+  text-align: center;
+  font-size: 6rem;
+}
+
 .row-container {
     display: flex;
     flex-direction: row;        

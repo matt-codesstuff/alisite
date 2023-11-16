@@ -36,12 +36,15 @@
                 {% endif %}
         {% else %}
             <div style="text-align: center;">
-                <h1 class="josefont">Ali's Kitchen</h1>
+                <h1 class="alwaysforever">Ali's Kitchen</h1>
                 <br>
+                {{request.content}}
                 <p><a href="/login"><strong>Login</strong></a></p>
-                <!--<p><small>or</small></p>
-                <p><a href="/register"><strong>Register</strong></a></p>
-                <p><small>a new account</small></p>-->                
+                {% if development %}
+                    <p><small>or</small></p>
+                    <p><a href="/register"><strong>Register</strong></a></p>
+                    <p><small>a new account</small></p>
+                {% endif %}                   
             </div>
 
         {% endif %}        

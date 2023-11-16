@@ -1,3 +1,5 @@
+import os
+
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.urls import reverse
@@ -19,7 +21,12 @@ def index(request):
     user_pk = request.user.pk
     recipes = Recipe.objects.filter(user__pk=user_pk)
     categories = Category.objects.filter(user__pk=user_pk)
-
+    django_settings = os.environ.get('DJANGO_SETTINGS_MODULE')
+    if django_settings == 'alisite.settings.development':
+        development = True
+    else:
+        development = False
+            
     # some cleanup to find empty categories and delete them
     if categories:
         for cat in categories:
@@ -37,6 +44,7 @@ def index(request):
     return render(request, 'recipes/index.html', {
         'categories': categories,
         'recipes': recipes,
+        'development': development
     })
 
 # creating new recipe
