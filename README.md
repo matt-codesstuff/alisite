@@ -3,9 +3,6 @@
 This is a simple web application that allows a user to store, edit and view their recipes conveniently
  online. It uses the Python Django web-framework to create a CRUD (Create, Read, Update, Delete) back-end and uses HTML, CSS and Bootstrap to create a user-friendly, responsive front-end interface.
 
-## Hosted
-This site is hosted on https://aliskitchen-67f842b12558.herokuapp.com/  
-    (Hosted on Heroku , connected to a seperate postgreSQL database)
 
 ## Features
 
@@ -47,25 +44,39 @@ Follow these steps to get the application up and running on your local machine:
    pip install -r requirements.txt
    ```
 
-4. Apply database migrations:
+5. Generate sceret key:
+
+   ```bash
+   python manage.py shell
+   >>>from django.core.management.utils import get_random_secret_key
+   >>>print(get_random_secret_key())
+   >>>quit()
+   ```
+   
+5. Copy secret key and paste it into the SECRET_KEY variable found at alisite\settings\common.py.
+   The secret key needs to be a string, so remember to put quotes aound it.
+
+  
+
+7. Apply database migrations:
 
    ```bash
    python manage.py migrate
    ```
 
-5. Create a superuser to access the Django admin interface:
+8. Create a superuser to access the Django admin interface:
 
    ```bash
    python manage.py createsuperuser
    ```
 
-6. Start the development server:
+9. Start the development server:
 
    ```bash
    python manage.py runserver
    ```
 
-7. Access the application in your web browser at `http://127.0.0.1:8000/`.
+10. Access the application in your web browser at `http://127.0.0.1:8000/`.
 
 ## Usage
 
