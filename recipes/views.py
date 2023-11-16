@@ -213,34 +213,35 @@ def get_recipe(request):
                     return  redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))
 
                 # handle for existing category 
-                else:
-                     
+                else:                    
                     recipe_url = request.POST.get('url')
                     online_recipe = scrape_me(recipe_url, wild_mode = True)                      
                     recipe = scrape_recipe(user_pk, request, online_recipe)   
                     recipe.save()                    
                     return  redirect(reverse('recipes:view_recipe', kwargs={'rec_pk': recipe.pk}))
             except:
-                messages.error(request, 'Oops, something went wrong. Please check that you have given a category, it is also possible that this URL does not contain a recipe')
+                messages.error(request, 'Oops, something went wrong. Please check that you have given a category. It is also possible that this recipe simply cannot be scraped :(')               
                 data = {'url': request.POST.get('url'),
                         'category': request.POST.get('category'),
                         'new_category': request.POST.get('new_category'),
                         'cat_image': request.POST.get('cat_image'),
-                        'cat_description': request.POST.get('cat_description')}
+                        'cat_description': request.POST.get('cat_description')}                
                 form = ScraperForm(initial=data, user=request.user)
+                                
                 return render(request, 'recipes/get_recipe.html', {
                     'form': form,
                     'recipes': recipes,
                     'categories': categories
                 })                        
         else:
-            messages.error(request, 'Please give a category')
+            messages.error(request, 'Please provide a category')           
             data = {'url': request.POST.get('url'),
                     'category': request.POST.get('category'),
                     'new_category': request.POST.get('new_category'),
                     'cat_image': request.POST.get('cat_image'),
-                    'cat_description': request.POST.get('cat_description')}
+                    'cat_description': request.POST.get('cat_description')}            
             form = ScraperForm(initial=data, user=request.user)
+            
             return render(request, 'recipes/get_recipe.html', {
                 'form': form,
                 'recipes': recipes,
