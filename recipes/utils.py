@@ -56,7 +56,7 @@ def create_recipe_existing_cat(user_pk, request):
     else:    
         servings = request.POST.get('servings')
 
-    # create recipe and return to view to be saved
+    # get fields ready
     user = User.objects.get(pk=user_pk)
     category_pk = request.POST.get('category')
     category = Category.objects.get(pk=category_pk)
@@ -64,6 +64,7 @@ def create_recipe_existing_cat(user_pk, request):
     body = request.POST.get('body')
     ingredients = request.POST.get('ingredients')
 
+    # create recipe and return to view to be saved
     recipe = Recipe(category=category,
             user=user,
             title=title,
@@ -76,7 +77,7 @@ def create_recipe_existing_cat(user_pk, request):
 def edit_recipe_new_cat(request, recipe):
 
     # this bit of code is because no error handling was implemented for when no servings were given
-    # not going to mess around with error handling now. this fixes it
+    # **note to self** handle for this error in the form
     if not request.POST.get('servings'):
         servings = 1
     else:    
@@ -133,15 +134,14 @@ def scrape_recipe(user_pk, request, online_recipe, new_cat=False):
     else:    
         category_pk = request.POST.get('category')
         category = Category.objects.get(pk=category_pk)      
-    user = User.objects.get(pk=user_pk)
-    
-    title = online_recipe.title()
-    site = online_recipe.host()
+    user = User.objects.get(pk=user_pk) 
+    title = online_recipe.title()   
+    site = online_recipe.host()    
 
     # some times the scraper does not return any yields
     # in that case, we set servings to one
     try:
-        servings = int(online_recipe.yields()[0])
+        servings = int(online_recipe.yields()[0])  
     except IndexError:
         servings = 1    
     
@@ -151,7 +151,7 @@ def scrape_recipe(user_pk, request, online_recipe, new_cat=False):
         ingredient_list = online_recipe.ingredients()
     except AttributeError:       
         ingredient_list = online_recipe.schema.data['recipeIngredient']  
-      
+     
     # format list of ingredients into an html string
     # to be displayed in the ckeditor widget
     ingredients = ''

@@ -3,8 +3,7 @@
         <div class="col">
             <div class="center">
                 <div style="width: 263px; padding: 5px;"> 
-                    <div class="cat-flex" style="width: 250px" >
-                        {% csrf_token %}
+                    <div class="cat-flex" style="width: 250px" >   
                         {{rec_form.title.label}}
                         {{rec_form.title}}
                     </div>                   
@@ -25,7 +24,8 @@
                 <div style="border: 1px solid #a9aaaa; border-radius:  15px; background-color: #383e3e; width: 263px; padding: 5px;">                
                     <div class="cat-flex" style="width: 250px" >
                         {{rec_form.new_category.label}}
-                        {{rec_form.new_category.errors}}{{rec_form.new_category}}
+                        {{rec_form.new_category.errors}}
+                        {{rec_form.new_category}}
                     </div>
                     <div class="cat-flex" style="width: 250px" >
                         {{rec_form.cat_image.label}}

@@ -4,6 +4,7 @@
     <br /><br />
 
     <form action="{% url 'recipes:create' %}" method="POST">
+        {% csrf_token %}
         {% include "recipes/includes/recipe_form_create.html" %}            
     </form>
 {% endblock %}

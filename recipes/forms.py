@@ -8,7 +8,8 @@ class RecipeForm(forms.ModelForm):
 
     # custom form fields
     ingredients = forms.CharField(widget=CKEditorWidget(config_name='ingredients'), required=False)
-    new_category = forms.CharField(required=False, label="New Category")
+    new_category = forms.CharField(required=False, label="New Category", widget=forms.TextInput(
+        attrs={'placeholder': 'title'}))
     cat_image = forms.URLField(required=False, label="Image", widget=forms.TextInput(
         attrs={'placeholder': 'paste link here'}))
     cat_description = forms.CharField(required=False, label="Description", widget=forms.Textarea(
@@ -49,7 +50,8 @@ class ScraperForm(forms.Form):
     # custom form fields
     url = forms.URLField(label="Recipe URL", widget=forms.TextInput(
         attrs={'placeholder': 'paste link here'}))
-    new_category = forms.CharField(required=False, label="New Category")
+    new_category = forms.CharField(required=False, label="New Category", widget=forms.TextInput(
+        attrs={'placeholder': 'title'}))
     cat_image = forms.URLField(required=False, label="Image", widget=forms.TextInput(
         attrs={'placeholder': 'paste link here'}))
     cat_description = forms.CharField(required=False, label="Description", widget=forms.Textarea(

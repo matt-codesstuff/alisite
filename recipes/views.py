@@ -13,6 +13,8 @@ from .utils import *
 
 
 # homepage
+# all recipes and categories belonging to the user are queried and 
+# sent to the front end to be rendered
 def index(request):
     user_pk = request.user.pk
     recipes = Recipe.objects.filter(user__pk=user_pk)
@@ -203,7 +205,7 @@ def get_recipe(request):
                     return redirect(reverse('recipes:get_recipe', kwargs={'user_pk': user_pk}))
                 
                 # handle for new category
-                if new_category:                  
+                if new_category:                
                     recipe_url = request.POST.get('url')
                     online_recipe = scrape_me(recipe_url, wild_mode = True)                     
                     recipe = scrape_recipe_new_cat(user_pk, request, online_recipe)
@@ -271,6 +273,8 @@ def delete_recipe(request, rec_pk):
     recipe.delete()
     return redirect('recipes:index')
 
+
+'''
 # register a new user
 def register(request):
     if request.method == 'POST':
@@ -287,6 +291,7 @@ def register(request):
     return render(request, 'recipes/register.html', {
         'form': form,
     })
+'''
 
 # logout user
 def logout_request(request):
