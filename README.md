@@ -98,4 +98,4 @@ Follow these steps to get the application up and running on your local machine:
 
 
 ## Technologies Used:
-Python, Django, MySQL, PostgreSQL, Bootstrap, HTML5, CSS, JavaScript, Git
+Python, Django, SQLite, PostgreSQL, Bootstrap, HTML5, CSS, JavaScript, Git
