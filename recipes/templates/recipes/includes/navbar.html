@@ -6,6 +6,11 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDarkDropdown">
+            <form action="{% url 'recipes:search' %}" class="d-flex" role="search"  method="POST">
+              {%csrf_token%}
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="user_search">
+              <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>   
             <ul class="navbar-nav">                
               {% for cat in categories %}
                 <li class="nav-item dropdown">
@@ -36,7 +41,8 @@
         <div style="margin-right: 25px;">
           <a href="{% url 'recipes:logout' %}" style="color:whitesmoke"><small>Logout</small></a>
         </div> 
-      {% endif %}        
+      {% endif %}
+           
     </div>
 </nav>
 

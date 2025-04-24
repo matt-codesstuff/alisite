@@ -283,7 +283,7 @@ def delete_recipe(request, rec_pk):
     return redirect('recipes:index')
 
 
-'''
+
 # register a new user
 def register(request):
     if request.method == 'POST':
@@ -300,7 +300,7 @@ def register(request):
     return render(request, 'recipes/register.html', {
         'form': form,
     })
-'''
+
 
 # logout user
 def logout_request(request):
@@ -329,4 +329,16 @@ def login_request(request):
     form = AuthenticationForm()
     return render(request, 'recipes/login.html', {
         'form': form,
+    })
+
+def search(request):
+    if request.method == 'POST':
+        user_search = request.POST.get('user_search')
+        user_pk = request.user.pk  
+        recipes = Recipe.objects.filter(user__pk=user_pk)
+        search_recipes = recipes.filter(title__contains=user_search)
+        
+        return render(request, 'recipes/search.html', {
+        'search_recipes' : search_recipes,
+        'user_search': user_search
     })

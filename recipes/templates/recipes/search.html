@@ -1,0 +1,18 @@
+{% extends 'recipes/header.html' %} 
+{% block content %}
+
+{% if search_recipes %}
+    <ul>
+        {% for recipe in search_recipes %}
+            <li>
+                <a href="{% url 'recipes:view_recipe' rec_pk=recipe.pk %}">
+                    {{recipe.title}}
+                </a>    
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <h5> No Results Found For "{{user_search}}"
+{% endif %}  
+  
+{% endblock %}
