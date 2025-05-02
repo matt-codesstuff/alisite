@@ -1,18 +1,28 @@
 {% extends 'recipes/header.html' %} 
 {% block content %}
 
-{% if search_recipes %}
-    <ul>
-        {% for recipe in search_recipes %}
-            <li>
-                <a href="{% url 'recipes:view_recipe' rec_pk=recipe.pk %}">
-                    {{recipe.title}}
-                </a>    
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <h5> No Results Found For "{{user_search}}"
-{% endif %}  
-  
+    {% if search_title or search_ingredients %}
+        <ul>
+            {% for recipe in search_title %}
+                <li>
+                    <a href="{% url 'recipes:view_recipe' rec_pk=recipe.pk %}">
+                        {{recipe.title}}
+                    </a>    
+                </li>
+            {% endfor %}
+        </ul>
+        <ul>
+            {% for recipe in search_ingredients %}
+                <h5>Recipies With Relevant Ingredient(s):</h5>
+                <li>
+                    <a href="{% url 'recipes:view_recipe' rec_pk=recipe.pk %}">
+                        {{recipe.title}}
+                    </a>    
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h5> No Results Found For "{{user_search}}"</h5>
+    {% endif %}  
+
 {% endblock %}
