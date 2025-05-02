@@ -13,7 +13,6 @@
         </ul>
         <ul>
             {% for recipe in search_ingredients %}
-                <h5>Recipies With Relevant Ingredient(s):</h5>
                 <li>
                     <a href="{% url 'recipes:view_recipe' rec_pk=recipe.pk %}">
                         {{recipe.title}}
