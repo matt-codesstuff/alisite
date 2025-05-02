@@ -338,9 +338,11 @@ def search(request):
         recipes = Recipe.objects.filter(user__pk=user_pk)
         search_title = recipes.filter(title__contains=user_search)
         search_ingredients = recipes.filter(ingredients__contains=user_search)
+        search_list = set(list(search_ingredients) + list(search_title))
         
         return render(request, 'recipes/search.html', {
         'search_title' : search_title,
         'user_search': user_search,
-        'search_ingredients': search_ingredients
+        'search_ingredients': search_ingredients,
+        'search_list': search_list
     })

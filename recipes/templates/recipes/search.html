@@ -3,16 +3,7 @@
 
     {% if search_title or search_ingredients %}
         <ul>
-            {% for recipe in search_title %}
-                <li>
-                    <a href="{% url 'recipes:view_recipe' rec_pk=recipe.pk %}">
-                        {{recipe.title}}
-                    </a>    
-                </li>
-            {% endfor %}
-        </ul>
-        <ul>
-            {% for recipe in search_ingredients %}
+            {% for recipe in search_list %}
                 <li>
                     <a href="{% url 'recipes:view_recipe' rec_pk=recipe.pk %}">
                         {{recipe.title}}
